@@ -15,7 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let appCoordinator = MyJetCoordinator(
             store: Store(
-                initialState: MyJetCoordinator.State(myJet: MyJet.State()),
+                initialState: MyJetCoordinator.State(state: MyJet.State()),
                 reducer: MyJetCoordinator.reducer,
                 environment: MyJetCoordinator.Environment()
             )

@@ -19,6 +19,7 @@
 		79AC11632790893A002F2F2C /* MyJet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AC11622790893A002F2F2C /* MyJet.swift */; };
 		79BD1D9527A2FCA000C3A42E /* OptionalPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BD1D9427A2FCA000C3A42E /* OptionalPaths.swift */; };
 		79BD1D9727A3055500C3A42E /* HostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BD1D9627A3055500C3A42E /* HostingController.swift */; };
+		79BD1D9927A3E9E000C3A42E /* DetailCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BD1D9827A3E9E000C3A42E /* DetailCoordinator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		79AC11622790893A002F2F2C /* MyJet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyJet.swift; sourceTree = "<group>"; };
 		79BD1D9427A2FCA000C3A42E /* OptionalPaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalPaths.swift; sourceTree = "<group>"; };
 		79BD1D9627A3055500C3A42E /* HostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostingController.swift; sourceTree = "<group>"; };
+		79BD1D9827A3E9E000C3A42E /* DetailCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCoordinator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,13 +83,14 @@
 			children = (
 				797368272784B06000C0854E /* AppDelegate.swift */,
 				79AC115B279057D2002F2F2C /* Coordinator.swift */,
+				79BD1D9827A3E9E000C3A42E /* DetailCoordinator.swift */,
 				79AC115E27907E12002F2F2C /* DetailScreen.swift */,
+				79BD1D9627A3055500C3A42E /* HostingController.swift */,
 				79AC11622790893A002F2F2C /* MyJet.swift */,
 				79AC115527903E69002F2F2C /* MyJetCoordinator.swift */,
+				79BD1D9427A2FCA000C3A42E /* OptionalPaths.swift */,
 				797368292784B06000C0854E /* SceneDelegate.swift */,
 				7973682B2784B06000C0854E /* ViewController.swift */,
-				79BD1D9427A2FCA000C3A42E /* OptionalPaths.swift */,
-				79BD1D9627A3055500C3A42E /* HostingController.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -171,6 +174,7 @@
 				79AC115F27907E12002F2F2C /* DetailScreen.swift in Sources */,
 				79AC115627903E69002F2F2C /* MyJetCoordinator.swift in Sources */,
 				7973682C2784B06000C0854E /* ViewController.swift in Sources */,
+				79BD1D9927A3E9E000C3A42E /* DetailCoordinator.swift in Sources */,
 				79AC115C279057D2002F2F2C /* Coordinator.swift in Sources */,
 				79BD1D9527A2FCA000C3A42E /* OptionalPaths.swift in Sources */,
 				797368282784B06000C0854E /* AppDelegate.swift in Sources */,
