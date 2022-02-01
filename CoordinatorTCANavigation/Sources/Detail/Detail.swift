@@ -5,9 +5,8 @@ enum Detail {}
 
 extension Detail {
     enum Action: Equatable {
-//        case pushButtonTapped
-//        case presentButtonTapped
         case closeButtonTapped
+        case closeAllButtonTapped
     }
 
     struct State: Equatable {}
@@ -26,21 +25,17 @@ extension Detail {
 
         var body: some View {
             WithViewStore(store.stateless) { viewStore in
-                VStack {
-//                    Button("Push") {
-//                        viewStore.send(.pushButtonTapped)
-//                    }
-//
-//                    Button("Present") {
-//                        viewStore.send(.presentButtonTapped)
-//                    }
-
+                VStack(spacing: 20) {
                     Button("Close") {
                         viewStore.send(.closeButtonTapped)
                     }
+
+                    Button("Close all") {
+                        viewStore.send(.closeAllButtonTapped)
+                    }
                 }
             }
+            .navigationTitle("Detail")
         }
-
     }
 }

@@ -6,18 +6,18 @@ import ComposableArchitecture
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    var appCoordinator: MyJetCoordinator?
+    var appCoordinator: MyJet.Coordinator?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         let window = UIWindow(windowScene: windowScene)
 
-        let appCoordinator = MyJetCoordinator(
+        let appCoordinator = MyJet.Coordinator(
             store: Store(
-                initialState: MyJetCoordinator.State(state: MyJet.State()),
-                reducer: MyJetCoordinator.reducer,
-                environment: MyJetCoordinator.Environment()
+                initialState: MyJet.State(),
+                reducer: MyJet.reducer,
+                environment: MyJet.Environment()
             )
         )
         window.rootViewController = appCoordinator.rootViewController
