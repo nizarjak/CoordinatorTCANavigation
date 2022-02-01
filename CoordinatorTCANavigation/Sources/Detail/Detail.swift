@@ -7,16 +7,28 @@ extension Detail {
     enum Action: Equatable {
         case closeButtonTapped
         case closeAllButtonTapped
+        case likeButtonTapped
     }
 
     struct State: Equatable {
+        let id: String
         let name: String
         let color: Color
+        var isLiked: Bool
     }
 
     struct Environment {}
 
-    static let reducer: Reducer<State, Action, Environment> = .empty
+    static let reducer = Reducer<State, Action, Environment> { state, action, _ in
+        switch action {
+        case .likeButtonTapped:
+            state.isLiked.toggle()
+
+        case .closeButtonTapped, .closeAllButtonTapped:
+            break
+        }
+        return .none
+    }
 
     struct Screen: View {
 
@@ -35,6 +47,11 @@ extension Detail {
                         Circle()
                             .fill(viewStore.color)
                             .frame(width: 20, height: 20)
+
+                        Button(action: { viewStore.send(.likeButtonTapped) }) {
+                            Image(systemName: viewStore.isLiked ? "hand.thumbsup.fill" : "hand.thumbsup")
+                                .foregroundColor(viewStore.color)
+                        }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
@@ -56,7 +73,7 @@ struct Detail_Preview: PreviewProvider {
     static var previews: some View {
         NavigationView {
             Detail.Screen(store: Store(
-                initialState: Detail.State(name: "Blue", color: .blue),
+                initialState: Detail.State(id: "color-1", name: "Blue", color: .blue, isLiked: true),
                 reducer: Detail.reducer,
                 environment: Detail.Environment()
             ))

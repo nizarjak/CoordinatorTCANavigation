@@ -12,13 +12,13 @@ extension Reservations {
 
     struct State: Equatable {
         var reservations: IdentifiedArrayOf<Reservation.State> = [
-            .init(id: .init(), name: "Blue", color: .blue),
-            .init(id: .init(), name: "Green", color: .green),
-            .init(id: .init(), name: "Red", color: .red),
-            .init(id: .init(), name: "Yellow", color: .yellow),
-            .init(id: .init(), name: "Purple", color: .purple),
-            .init(id: .init(), name: "Orange", color: .orange),
-            .init(id: .init(), name: "Pink", color: .pink),
+            .init(id: "color-1", name: "Blue", color: .blue, isLiked: false),
+            .init(id: "color-2", name: "Green", color: .green, isLiked: false),
+            .init(id: "color-3", name: "Red", color: .red, isLiked: false),
+            .init(id: "color-4", name: "Yellow", color: .yellow, isLiked: false),
+            .init(id: "color-5", name: "Purple", color: .purple, isLiked: false),
+            .init(id: "color-6", name: "Orange", color: .orange, isLiked: false),
+            .init(id: "color-7", name: "Pink", color: .pink, isLiked: false),
         ]
 
         var route: Route?
@@ -28,7 +28,7 @@ extension Reservations {
         case pushedDetail(NavigationAction<Detail.Action>)
         case presentedDetail(NavigationAction<Detail.Action>)
 
-        case reservation(UUID, Reservation.Action)
+        case reservation(String, Reservation.Action)
 
         case closeButtonTapped
     }
@@ -54,25 +54,41 @@ extension Reservations {
             environment: \Environment.detail
         ),
 
+        // reservations - items
+        Reservation.reducer.forEach(
+            state: \.reservations,
+            action: /Action.reservation,
+            environment: { _ in () }
+        ),
+
+        // navigation
         .init { state, action, _ in
             switch action {
                 // present detail
             case .presentedDetail(.onClose), .presentedDetail(.action(.closeButtonTapped)):
+                if let route = state.route,
+                   case let Route.presentedDetail(detailState) = route {
+                    state.reservations[id: detailState.id] = Reservation.State(detail: detailState)
+                }
                 state.route = nil
                 return.none
 
             case let .reservation(id, .presentButtonTapped):
                 guard let reservation = state.reservations[id: id] else { return .none }
-                state.route = .presentedDetail(.init(name: reservation.name, color: reservation.color))
+                state.route = .presentedDetail(.init(reservation: reservation))
                 return .none
 
                 // push detail
             case let .reservation(id, .pushButtonTapped):
                 guard let reservation = state.reservations[id: id] else { return .none }
-                state.route = .pushedDetail(.init(name: reservation.name, color: reservation.color))
+                state.route = .pushedDetail(.init(reservation: reservation))
                 return .none
 
             case .pushedDetail(.onClose), .pushedDetail(.action(.closeButtonTapped)):
+                if let route = state.route,
+                   case let Route.pushedDetail(detailState) = route {
+                    state.reservations[id: detailState.id] = Reservation.State(detail: detailState)
+                }
                 state.route = nil
                 return.none
 
@@ -115,6 +131,18 @@ extension Reservations {
             }
         }
 
+    }
+}
+
+extension Detail.State {
+    init(reservation: Reservation.State) {
+        self.init(id: reservation.id, name: reservation.name, color: reservation.color, isLiked: reservation.isLiked)
+    }
+}
+
+extension Reservation.State {
+    init(detail: Detail.State) {
+        self.init(id: detail.id, name: detail.name, color: detail.color, isLiked: detail.isLiked)
     }
 }
 

@@ -6,17 +6,28 @@ enum Reservation {}
 
 extension Reservation {
     struct State: Equatable, Identifiable {
-        let id: UUID
+        let id: String
         let name: String
         let color: Color
+        var isLiked: Bool
     }
 
     enum Action: Equatable {
         case pushButtonTapped
         case presentButtonTapped
+        case likeButtonTapped
     }
 
-    static let reducer: Reducer<State, Action, Void> = .empty
+    static let reducer = Reducer<State, Action, Void> { state, action, _ in
+        switch action {
+        case .likeButtonTapped:
+            state.isLiked.toggle()
+
+        case .pushButtonTapped, .presentButtonTapped:
+            break
+        }
+        return .none
+    }
 
     struct View: SwiftUI.View {
 
@@ -31,6 +42,11 @@ extension Reservation {
                         Circle()
                             .fill(viewStore.color)
                             .frame(width: 20, height: 20)
+
+                        Button(action: { viewStore.send(.likeButtonTapped) }) {
+                            Image(systemName: viewStore.isLiked ? "hand.thumbsup.fill" : "hand.thumbsup")
+                                .foregroundColor(viewStore.color)
+                        }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
@@ -55,7 +71,7 @@ extension Reservation {
 struct Reservation_Preview: PreviewProvider {
     static var previews: some View {
         Reservation.View(store: Store(
-            initialState: .init(id: .init(), name: "Blue", color: .blue),
+            initialState: .init(id: .init(), name: "Green", color: .green, isLiked: true),
             reducer: Reservation.reducer,
             environment: ()
         ))
