@@ -33,16 +33,14 @@ extension MyJet {
         Reservations.reducer._pullback(
             state: (\State.route).appending(path: /Route.presentedReservations),
             action: (/Action.presentedReservations).appending(path: /NavigationAction<Reservations.Action>.action),
-            environment: \Environment.reservations,
-            breakpointOnNil: false
+            environment: \Environment.reservations
         ),
 
         // pushed
         Reservations.reducer._pullback(
             state: (\State.route).appending(path: /Route.pushedReservations),
             action: (/Action.pushedReservations).appending(path: /NavigationAction<Reservations.Action>.action),
-            environment: \Environment.reservations,
-            breakpointOnNil: false
+            environment: \Environment.reservations
         ),
 
         .init { state, action, environment in
@@ -67,7 +65,7 @@ extension MyJet {
 
             // deeplink
             case .deeplinkButtonTapped:
-                state.route = .presentedReservations(.init(route: .presentedDetail(.init())))
+                state.route = .presentedReservations(.init(route: .presentedDetail(.init(name: "Blue", color: .blue))))
                 return .none
 
             // close all

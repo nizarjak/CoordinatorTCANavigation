@@ -26,7 +26,9 @@ extension MyJet {
                 onDeinit: nil // no need to clear state as the coordinator should deallocate
             )
             let navigationController = UINavigationController(rootViewController: viewController)
+            navigationController.navigationBar.prefersLargeTitles = true
             self.navigationController = navigationController
+
 
             bindPresentedReservations(to: viewController)
             bindPushedReservations(to: navigationController)

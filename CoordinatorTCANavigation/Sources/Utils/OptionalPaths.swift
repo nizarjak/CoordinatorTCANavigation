@@ -166,7 +166,7 @@ extension Reducer {
     state toLocalState: StatePath,
     action toLocalAction: ActionPath,
     environment toLocalEnvironment: @escaping (GlobalEnvironment) -> Environment,
-    breakpointOnNil: Bool = true,
+    breakpointOnNil: Bool = false, // TODO: [Jakub] Temporary
     file: StaticString = #file,
     line: UInt = #line
   ) -> Reducer<GlobalState, GlobalAction, GlobalEnvironment>

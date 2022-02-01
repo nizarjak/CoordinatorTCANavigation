@@ -15,6 +15,7 @@
 		7973682A2784B06000C0854E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797368292784B06000C0854E /* SceneDelegate.swift */; };
 		797368312784B06300C0854E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 797368302784B06300C0854E /* Assets.xcassets */; };
 		797368342784B06300C0854E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 797368322784B06300C0854E /* LaunchScreen.storyboard */; };
+		7993E9CF27A92B41006565E9 /* Reservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7993E9CE27A92B41006565E9 /* Reservation.swift */; };
 		79AC115627903E69002F2F2C /* MyJetCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AC115527903E69002F2F2C /* MyJetCoordinator.swift */; };
 		79AC115A279057A6002F2F2C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 79AC1159279057A6002F2F2C /* ComposableArchitecture */; };
 		79AC115C279057D2002F2F2C /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AC115B279057D2002F2F2C /* Coordinator.swift */; };
@@ -36,6 +37,7 @@
 		797368302784B06300C0854E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		797368332784B06300C0854E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		797368352784B06300C0854E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7993E9CE27A92B41006565E9 /* Reservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reservation.swift; sourceTree = "<group>"; };
 		79AC115527903E69002F2F2C /* MyJetCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyJetCoordinator.swift; sourceTree = "<group>"; };
 		79AC115B279057D2002F2F2C /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		79AC115E27907E12002F2F2C /* Detail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Detail.swift; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 		791E34B427A8334300D029CD /* Reservations */ = {
 			isa = PBXGroup;
 			children = (
+				7993E9CE27A92B41006565E9 /* Reservation.swift */,
 				791E34B527A8336700D029CD /* Reservations.swift */,
 				791E34B727A8337300D029CD /* ReservationsCoordinator.swift */,
 			);
@@ -221,6 +224,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				791E34B627A8336700D029CD /* Reservations.swift in Sources */,
+				7993E9CF27A92B41006565E9 /* Reservation.swift in Sources */,
 				79AC115F27907E12002F2F2C /* Detail.swift in Sources */,
 				79AC115627903E69002F2F2C /* MyJetCoordinator.swift in Sources */,
 				79BD1D9927A3E9E000C3A42E /* DetailCoordinator.swift in Sources */,

@@ -9,7 +9,10 @@ extension Detail {
         case closeAllButtonTapped
     }
 
-    struct State: Equatable {}
+    struct State: Equatable {
+        let name: String
+        let color: Color
+    }
 
     struct Environment {}
 
@@ -24,8 +27,17 @@ extension Detail {
         }
 
         var body: some View {
-            WithViewStore(store.stateless) { viewStore in
+            WithViewStore(store) { viewStore in
                 VStack(spacing: 20) {
+                    HStack {
+                        Text(viewStore.name)
+
+                        Circle()
+                            .fill(viewStore.color)
+                            .frame(width: 20, height: 20)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
                     Button("Close") {
                         viewStore.send(.closeButtonTapped)
                     }
@@ -36,6 +48,18 @@ extension Detail {
                 }
             }
             .navigationTitle("Detail")
+        }
+    }
+}
+
+struct Detail_Preview: PreviewProvider {
+    static var previews: some View {
+        NavigationView {
+            Detail.Screen(store: Store(
+                initialState: Detail.State(name: "Blue", color: .blue),
+                reducer: Detail.reducer,
+                environment: Detail.Environment()
+            ))
         }
     }
 }

@@ -30,6 +30,7 @@ extension Reservations {
 
         func start(pushedTo navigationController: UINavigationController, animated: Bool = true) {
             let vc = makeReservationsVC()
+//            vc.title = "Reservations"
             navigationController.pushViewController(vc, animated: animated)
             self.navigationController = navigationController
 
