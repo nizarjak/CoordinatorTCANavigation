@@ -6,7 +6,7 @@ class HostingController<Content>: UIHostingController<Content> where Content : V
     let coordinator: CoordinatorType
     let onDeinit: (() -> Void)?
 
-    init(rootView: Content, coordinator: CoordinatorType, onDeinit: (() -> Void)?) {
+    init(rootView: Content, coordinator: CoordinatorType, onDeinit: (() -> Void)? = nil) {
         self.coordinator = coordinator
         self.onDeinit = onDeinit
         super.init(rootView: rootView)

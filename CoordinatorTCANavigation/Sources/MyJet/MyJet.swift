@@ -78,10 +78,15 @@ extension MyJet {
                     .presentedReservations(.action(.pushedDetail(.action(.closeAllButtonTapped)))),
                     .presentedReservations(.action(.presentedDetail(.action(.closeAllButtonTapped)))),
 
-                    .pushedReservations(.action(.pushedDetail(.action(.edit(.closeAllTapped))))),
-                    .pushedReservations(.action(.presentedDetail(.action(.edit(.closeAllTapped))))),
-                    .presentedReservations(.action(.pushedDetail(.action(.edit(.closeAllTapped))))),
-                    .presentedReservations(.action(.presentedDetail(.action(.edit(.closeAllTapped))))):
+                    .pushedReservations(.action(.pushedDetail(.action(.editSwiftUI(.closeAllTapped))))),
+                    .pushedReservations(.action(.presentedDetail(.action(.editSwiftUI(.closeAllTapped))))),
+                    .presentedReservations(.action(.pushedDetail(.action(.editSwiftUI(.closeAllTapped))))),
+                    .presentedReservations(.action(.presentedDetail(.action(.editSwiftUI(.closeAllTapped))))),
+
+                    .pushedReservations(.action(.pushedDetail(.action(.editCoordinator(.action(.closeAllTapped)))))),
+                    .pushedReservations(.action(.presentedDetail(.action(.editCoordinator(.action(.closeAllTapped)))))),
+                    .presentedReservations(.action(.pushedDetail(.action(.editCoordinator(.action(.closeAllTapped)))))),
+                    .presentedReservations(.action(.presentedDetail(.action(.editCoordinator(.action(.closeAllTapped)))))):
                 state.route = nil
                 return .none
 
@@ -90,21 +95,12 @@ extension MyJet {
                     .presentedReservations(.action(.pushedDetail(.onClose))),
                     .presentedReservations(.action(.presentedDetail(.onClose))):
                 Log.debug("detail onClose called")
-
-                return .none
-
-            case .pushedReservations(.onClose),
-                    .pushedReservations(.onClose):
-                Log.debug("reservation onClose called")
-
                 return .none
 
             case .presentedReservations, .pushedReservations:
                 return .none
             }
         },
-
-        // pushed
     ])
     .debug()
 }

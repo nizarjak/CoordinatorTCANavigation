@@ -94,6 +94,13 @@ extension Reservations {
                 state.route = nil
                 return.none
 
+            case .pushedDetail(.action(.editSwiftUI(.closeToReservationsTapped))),
+                    .pushedDetail(.action(.editCoordinator(.action(.closeToReservationsTapped)))),
+                    .presentedDetail(.action(.editSwiftUI(.closeToReservationsTapped))),
+                    .presentedDetail(.action(.editCoordinator(.action(.closeToReservationsTapped)))):
+                state.route = nil
+                return .none
+
             case .closeButtonTapped, .pushedDetail, .presentedDetail, .reservation:
                 return .none
             }

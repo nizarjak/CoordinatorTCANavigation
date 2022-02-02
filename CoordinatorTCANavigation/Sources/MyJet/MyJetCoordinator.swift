@@ -11,8 +11,6 @@ extension MyJet {
         let store: Store<MyJet.State, MyJet.Action>
         var rootViewController: UIViewController? { navigationController }
 
-        private weak var reservationsCoordinator: Reservations.Coordinator?
-
         private weak var navigationController: UINavigationController?
         private var cancelables: Set<AnyCancellable> = []
         private var cancelEffects: ([AnyHashable]) -> Void = { _ in } // overriden in constructor
@@ -32,7 +30,7 @@ extension MyJet {
                 onDeinit: nil // no need to clear state as the coordinator should deallocate
             )
             let navigationController = UINavigationController(rootViewController: viewController)
-            navigationController.navigationBar.prefersLargeTitles = true
+//            navigationController.navigationBar.prefersLargeTitles = true
             self.navigationController = navigationController
 
             bindPresentedReservations(to: viewController)
@@ -43,7 +41,7 @@ extension MyJet {
             Log.debug()
         }
 
-        func closeAll() {
+        private func closeAll() {
             guard let navigationController = navigationController else { return }
 
             let isPresenting = navigationController.presentedViewController != nil
@@ -55,7 +53,7 @@ extension MyJet {
             navigationController.popToRootViewController(animated: !isPresenting)
         }
 
-        func bindPresentedReservations(to vc: UIViewController) {
+        private func bindPresentedReservations(to vc: UIViewController) {
             let reservationsPath = (\State.route).appending(path: /Route.presentedReservations)
             let reservationsStore = store.scope(state: reservationsPath.extract(from:), action: Action.presentedReservations)
 
@@ -66,7 +64,6 @@ extension MyJet {
                     cancelEffects: self.cancelEffects
                 )
                 reservationsCoordinator.start(presentedTo: vc)
-                self.reservationsCoordinator = reservationsCoordinator
             } else: { [weak self] in
                 // dismiss programmatically -> inform UIKit
 //                self?.reservationsCoordinator?.stop(animated: true)
@@ -75,7 +72,7 @@ extension MyJet {
             .store(in: &cancelables)
         }
 
-        func bindPushedReservations(to nc: UINavigationController) {
+        private func bindPushedReservations(to nc: UINavigationController) {
             let reservationsPath = (\State.route).appending(path: /Route.pushedReservations)
             let reservationsStore = store.scope(state: reservationsPath.extract(from:), action: Action.pushedReservations)
 
@@ -86,7 +83,6 @@ extension MyJet {
                     cancelEffects: self.cancelEffects
                 )
                 reservationsCoordinator.start(pushedTo: nc)
-                self.reservationsCoordinator = reservationsCoordinator
             } else: { [weak self] in
                 // dismiss programmatically -> inform UIKit
 //                self?.reservationsCoordinator?.stop(animated: true)
@@ -95,7 +91,7 @@ extension MyJet {
             .store(in: &cancelables)
         }
 
-        func cancelEffects(effectsToCancel effects: [AnyHashable]) {
+        private func cancelEffects(effectsToCancel effects: [AnyHashable]) {
             ViewStore(store).send(.cancelEffects(effects))
         }
     }

@@ -12,9 +12,15 @@ extension Detail {
         case onAppear
         case timerTicked
 
-        case editButtonTapped
-        case edit(Edit.Action)
+        case editSwiftUIButtonTapped
+        case editCoordinatorButtonTapped
+        case editSwiftUI(Edit.Action)
+        case editCoordinator(NavigationAction<Edit.Action>)
         case editClosed
+    }
+
+    enum Route: Equatable {
+        case edit(Edit.State)
     }
 
     struct State: Equatable {
@@ -25,6 +31,8 @@ extension Detail {
         var openedDuration = 0
 
         var edit: Edit.State?
+
+        var route: Route?
     }
 
     struct Environment {}
@@ -32,7 +40,13 @@ extension Detail {
     struct Effects: Hashable {}
 
     static let reducer: Reducer<State, Action, Environment> = .combine([
-        Edit.reducer.optional().pullback(state: \.edit, action: /Action.edit, environment: { _ in () }),
+        Edit.reducer.optional().pullback(state: \.edit, action: /Action.editSwiftUI, environment: { _ in () }),
+
+        Edit.reducer._pullback(
+            state: (\State.route).appending(path: /Route.edit),
+            action: (/Action.editCoordinator).appending(path: /NavigationAction<Edit.Action>.action),
+            environment: { _ in () }
+        ),
 
         .init { state, action, _ in
             switch action {
@@ -48,8 +62,11 @@ extension Detail {
             case .timerTicked:
                 state.openedDuration += 1
 
-            case .editButtonTapped:
+            case .editSwiftUIButtonTapped:
                 state.edit = .init(name: state.name)
+
+            case .editCoordinatorButtonTapped:
+                state.route = .edit(.init(name: state.name))
 
             case .editClosed:
                 if let name = state.edit?.name {
@@ -57,13 +74,13 @@ extension Detail {
                 }
                 state.edit = nil
 
-            case .edit(.closeAllTapped):
+            case .editSwiftUI(.closeAllTapped):
                 break
 
             case .likeButtonTapped:
                 state.isLiked.toggle()
 
-            case .closeButtonTapped, .closeAllButtonTapped, .edit:
+            case .closeButtonTapped, .closeAllButtonTapped, .editSwiftUI, .editCoordinator:
                 break
             }
             return .none
@@ -95,8 +112,12 @@ extension Detail {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                    Button("Edit") {
-                        viewStore.send(.editButtonTapped)
+                    Button("Edit SwiftUI") {
+                        viewStore.send(.editSwiftUIButtonTapped)
+                    }
+
+                    Button("Edit Coordinator") {
+                        viewStore.send(.editCoordinatorButtonTapped)
                     }
 
                     Button("Close") {
@@ -108,7 +129,7 @@ extension Detail {
                     }
                 }
                 .sheet(item: viewStore.binding(get: \.edit, send: Action.editClosed), onDismiss: nil) { _ in
-                    IfLetStore(store.scope(state: \.edit, action: Action.edit), then: Edit.Screen.init(store:))
+                    IfLetStore(store.scope(state: \.edit, action: Action.editSwiftUI), then: Edit.Screen.init(store:))
                 }
                 .onAppear {
                     viewStore.send(.onAppear)

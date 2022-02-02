@@ -13,13 +13,14 @@ extension Edit {
     enum Action: Equatable {
         case change(name: String)
         case closeAllTapped
+        case closeToReservationsTapped
     }
 
     static let reducer = Reducer<State, Action, Void> { state, action, _ in
         switch action {
         case .change(let name):
             state.name = name
-        case .closeAllTapped:
+        case .closeAllTapped, .closeToReservationsTapped:
             break
         }
         return .none
@@ -31,10 +32,12 @@ extension Edit {
 
         var body: some View {
             WithViewStore(store) { viewStore in
-                VStack {
+                VStack(spacing: 20) {
                     TextField.init("Color name: ", text: viewStore.binding(get: \.name, send: Action.change))
 
                     Button("Close all") { viewStore.send(.closeAllTapped) }
+
+                    Button("Close to Reservations") { viewStore.send(.closeToReservationsTapped) }
                 }
                 .padding()
             }
