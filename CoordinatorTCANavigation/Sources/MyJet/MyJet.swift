@@ -17,6 +17,7 @@ extension MyJet {
     enum Action: Equatable {
         case pushedReservations(NavigationAction<Reservations.Action>)
         case presentedReservations(NavigationAction<Reservations.Action>)
+        case cancelEffects([AnyHashable])
 
         case pushButtonTapped
         case presentButtonTapped
@@ -45,10 +46,13 @@ extension MyJet {
 
         .init { state, action, environment in
             switch action {
+            case .cancelEffects(let hashables):
+                return Effect.cancel(ids: hashables)
+
             // present Reservations
             case .presentedReservations(.onClose), .presentedReservations(.action(.closeButtonTapped)):
                 state.route = nil
-                return.none
+                return .none
 
             case .presentButtonTapped:
                 state.route = .presentedReservations(.init())
@@ -79,6 +83,20 @@ extension MyJet {
                     .presentedReservations(.action(.pushedDetail(.action(.edit(.closeAllTapped))))),
                     .presentedReservations(.action(.presentedDetail(.action(.edit(.closeAllTapped))))):
                 state.route = nil
+                return .none
+
+            case .pushedReservations(.action(.pushedDetail(.onClose))),
+                    .pushedReservations(.action(.presentedDetail(.onClose))),
+                    .presentedReservations(.action(.pushedDetail(.onClose))),
+                    .presentedReservations(.action(.presentedDetail(.onClose))):
+                Log.debug("detail onClose called")
+
+                return .none
+
+            case .pushedReservations(.onClose),
+                    .pushedReservations(.onClose):
+                Log.debug("reservation onClose called")
+
                 return .none
 
             case .presentedReservations, .pushedReservations:

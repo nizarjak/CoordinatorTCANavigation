@@ -72,7 +72,7 @@ extension Reservations {
                     state.reservations[id: detailState.id] = Reservation.State(detail: detailState)
                 }
                 state.route = nil
-                return.none
+                return .none
 
             case let .reservation(id, .presentButtonTapped):
                 guard let reservation = state.reservations[id: id] else { return .none }

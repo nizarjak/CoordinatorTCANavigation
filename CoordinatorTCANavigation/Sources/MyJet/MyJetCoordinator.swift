@@ -15,10 +15,16 @@ extension MyJet {
 
         private weak var navigationController: UINavigationController?
         private var cancelables: Set<AnyCancellable> = []
+        private var cancelEffects: ([AnyHashable]) -> Void = { _ in } // overriden in constructor
 
         init(store: Store<MyJet.State, MyJet.Action>) {
             Log.debug("")
             self.store = store
+
+            self.cancelEffects = { [weak self] effects in
+                guard let store = self?.store else { return }
+                ViewStore(store).send(.cancelEffects(effects))
+            }
 
             let viewController = HostingController(
                 rootView: MyJet.Screen(store: store),
@@ -42,8 +48,10 @@ extension MyJet {
 
             let isPresenting = navigationController.presentedViewController != nil
             if isPresenting {
+                // if something is presenting, we can hide poping below the modal screen's animation
                 navigationController.dismiss(animated: true)
             }
+            // pop with animation only when we're not animating any modal screen down.
             navigationController.popToRootViewController(animated: !isPresenting)
         }
 
@@ -52,9 +60,13 @@ extension MyJet {
             let reservationsStore = store.scope(state: reservationsPath.extract(from:), action: Action.presentedReservations)
 
             reservationsStore.ifLet { [weak self] honestReservationsStore in
-                let reservationsCoordinator = Reservations.Coordinator(store: honestReservationsStore)
+                guard let self = self else { return }
+                let reservationsCoordinator = Reservations.Coordinator(
+                    store: honestReservationsStore,
+                    cancelEffects: self.cancelEffects
+                )
                 reservationsCoordinator.start(presentedTo: vc)
-                self?.reservationsCoordinator = reservationsCoordinator
+                self.reservationsCoordinator = reservationsCoordinator
             } else: { [weak self] in
                 // dismiss programmatically -> inform UIKit
 //                self?.reservationsCoordinator?.stop(animated: true)
@@ -68,15 +80,23 @@ extension MyJet {
             let reservationsStore = store.scope(state: reservationsPath.extract(from:), action: Action.pushedReservations)
 
             reservationsStore.ifLet { [weak self] honestReservationsStore in
-                let reservationsCoordinator = Reservations.Coordinator(store: honestReservationsStore)
+                guard let self = self else { return }
+                let reservationsCoordinator = Reservations.Coordinator(
+                    store: honestReservationsStore,
+                    cancelEffects: self.cancelEffects
+                )
                 reservationsCoordinator.start(pushedTo: nc)
-                self?.reservationsCoordinator = reservationsCoordinator
+                self.reservationsCoordinator = reservationsCoordinator
             } else: { [weak self] in
                 // dismiss programmatically -> inform UIKit
 //                self?.reservationsCoordinator?.stop(animated: true)
                 self?.closeAll()
             }
             .store(in: &cancelables)
+        }
+
+        func cancelEffects(effectsToCancel effects: [AnyHashable]) {
+            ViewStore(store).send(.cancelEffects(effects))
         }
     }
 

@@ -7,32 +7,32 @@ import SwiftUI
 extension Reservations {
     class Coordinator: CoordinatorType {
 
-        enum NavigationType {
-            case push
-            case present
-            case none
-        }
 
         let store: Store<State, NavigationAction<Action>>
         var rootViewController: UIViewController? { navigationController }
 
         private weak var detailCoordinator: Detail.Coordinator?
-        private var navigation: NavigationType = .none
 
         private weak var navigationController: UINavigationController?
         private weak var viewController: UIViewController?
 
         private var cancelables: Set<AnyCancellable> = []
 
-        init(store: Store<State, NavigationAction<Action>>) {
+        var effectsToCancel: [AnyHashable] = []
+        var cancelEffects: ([AnyHashable]) -> Void
+
+        init(store: Store<State, NavigationAction<Action>>, cancelEffects: @escaping ([AnyHashable]) -> Void) {
             Log.debug()
             self.store = store
+            self.cancelEffects = cancelEffects
         }
 
         deinit {
             Log.debug()
             // closed by interaction?
-            ViewStore(store).send(.onClose)
+            let viewStore = ViewStore(store)
+            cancelEffects(effectsToCancel)
+            viewStore.send(.onClose)
         }
 
         func start(pushedTo navigationController: UINavigationController, animated: Bool = true) {
@@ -40,7 +40,6 @@ extension Reservations {
             vc.title = "Reservations"
             vc.navigationItem.rightBarButtonItem = .init(title: "Close", style: .plain, target: self, action: #selector(closeTapped))
             navigationController.pushViewController(vc, animated: animated)
-            self.navigation = .push
             self.navigationController = navigationController
 
             bindPresentedDetail(to: vc)
@@ -52,7 +51,6 @@ extension Reservations {
             let nc = UINavigationController(rootViewController: vc)
             nc.navigationBar.prefersLargeTitles = true
             viewController.present(nc, animated: animated)
-            self.navigation = .present
             self.viewController = viewController
             self.navigationController = nc
 
@@ -84,7 +82,6 @@ extension Reservations {
             ViewStore(store).send(.action(.closeButtonTapped))
         }
 
-
         func bindPresentedDetail(to vc: UIViewController) {
             let detailPath = (\State.route).appending(path: /Route.presentedDetail)
             let detailStore = store.scope(
@@ -93,10 +90,13 @@ extension Reservations {
             )
 
             detailStore.ifLet { [weak self, weak vc] honestDetailStore in
-                guard let vc = vc else { return }
-                let detailCoordinator = Detail.Coordinator(store: honestDetailStore)
+                guard let vc = vc, let self = self else { return }
+                let detailCoordinator = Detail.Coordinator(
+                    store: honestDetailStore,
+                    cancelEffects: self.cancelEffects
+                )
                 detailCoordinator.start(presentedTo: vc)
-                self?.detailCoordinator = detailCoordinator
+                self.detailCoordinator = detailCoordinator
             } else: { [weak self] in
                 // dismiss programmatically -> inform UIKit
                 self?.detailCoordinator?.stop(animated: true)
@@ -112,10 +112,13 @@ extension Reservations {
             )
 
             detailStore.ifLet { [weak self] honestDetailStore in
-                guard let nc = self?.navigationController else { return }
-                let detailCoordinator = Detail.Coordinator(store: honestDetailStore)
+                guard let nc = self?.navigationController, let self = self else { return }
+                let detailCoordinator = Detail.Coordinator(
+                    store: honestDetailStore,
+                    cancelEffects: self.cancelEffects
+                )
                 detailCoordinator.start(pushedTo: nc)
-                self?.detailCoordinator = detailCoordinator
+                self.detailCoordinator = detailCoordinator
             } else: { [weak self] in
                 // dismiss programmatically -> inform UIKit
                 self?.detailCoordinator?.stop(animated: true)

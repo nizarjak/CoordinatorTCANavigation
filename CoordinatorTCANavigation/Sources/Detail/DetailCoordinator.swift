@@ -14,14 +14,22 @@ extension Detail {
         private weak var viewController: UIViewController?
         private var cancelables: Set<AnyCancellable> = []
 
-        init(store: Store<State, NavigationAction<Action>>) {
+        var effectsToCancel: [AnyHashable] {
+            [Detail.Effects()]
+        }
+        var cancelEffects: ([AnyHashable]) -> Void
+
+        init(store: Store<State, NavigationAction<Action>>, cancelEffects: @escaping ([AnyHashable]) -> Void) {
             Log.debug()
             self.store = store
+            self.cancelEffects = cancelEffects
         }
 
         deinit {
             Log.debug()
-            ViewStore(store).send(.onClose)
+            let viewStore = ViewStore(store)
+            cancelEffects(effectsToCancel)
+            viewStore.send(.onClose)
         }
 
         func start(pushedTo navigationController: UINavigationController, animated: Bool = true) {

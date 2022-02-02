@@ -9,6 +9,9 @@ extension Detail {
         case closeAllButtonTapped
         case likeButtonTapped
 
+        case onAppear
+        case timerTicked
+
         case editButtonTapped
         case edit(Edit.Action)
         case editClosed
@@ -19,17 +22,32 @@ extension Detail {
         var name: String
         let color: Color
         var isLiked: Bool
+        var openedDuration = 0
 
         var edit: Edit.State?
     }
 
     struct Environment {}
 
+    struct Effects: Hashable {}
+
     static let reducer: Reducer<State, Action, Environment> = .combine([
         Edit.reducer.optional().pullback(state: \.edit, action: /Action.edit, environment: { _ in () }),
 
         .init { state, action, _ in
             switch action {
+            case .onAppear:
+                return Effect
+                    .timer(
+                        id: "timer",
+                        every: 1,
+                        on: DispatchQueue.main.eraseToAnyScheduler()
+                    )
+                    .map { _ in .timerTicked }
+
+            case .timerTicked:
+                state.openedDuration += 1
+
             case .editButtonTapped:
                 state.edit = .init(name: state.name)
 
@@ -50,7 +68,7 @@ extension Detail {
             }
             return .none
         },
-    ])
+    ]).cancellable(id: Effects())
 
     struct Screen: View {
 
@@ -91,6 +109,9 @@ extension Detail {
                 }
                 .sheet(item: viewStore.binding(get: \.edit, send: Action.editClosed), onDismiss: nil) { _ in
                     IfLetStore(store.scope(state: \.edit, action: Action.edit), then: Edit.Screen.init(store:))
+                }
+                .onAppear {
+                    viewStore.send(.onAppear)
                 }
             }
         }

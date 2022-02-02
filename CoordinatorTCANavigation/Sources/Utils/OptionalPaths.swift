@@ -227,3 +227,12 @@ ActionPath: Path, ActionPath.Root == GlobalAction, ActionPath.Value == Action
     }
 }
 
+extension Reducer {
+    /// Assign cancellable to all effects created by this reducer
+    func cancellable(id: AnyHashable) -> Self {
+        return Self { state, action, environment in
+            self.run(&state, action, environment)
+                .cancellable(id: id)
+        }
+    }
+}
