@@ -28,12 +28,16 @@ extension Detail {
             let vc = makeDetailVC()
             navigationController.pushViewController(vc, animated: animated)
             self.navigationController = navigationController
+            self.viewController = vc // required due to detail presenting screens by SwiftUI
         }
 
         func start(presentedTo viewController: UIViewController, animated: Bool = true) {
             let vc = makeDetailVC()
-            viewController.present(vc, animated: animated)
+            let nc = UINavigationController(rootViewController: vc)
+            nc.navigationBar.prefersLargeTitles = true
+            viewController.present(nc, animated: animated)
             self.viewController = viewController
+            self.navigationController = nc
         }
 
         func stop(animated: Bool = true) {
@@ -43,11 +47,14 @@ extension Detail {
         }
 
         func makeDetailVC(onDeinit: (() -> Void)? = nil) -> UIViewController {
-            return HostingController(
+            let vc = HostingController(
                 rootView: Detail.Screen(store: store.scope(state: { $0 }, action: NavigationAction.action)),
                 coordinator: self,
                 onDeinit: onDeinit
             )
+            vc.title = "Detail"
+
+            return vc
         }
     }
 }

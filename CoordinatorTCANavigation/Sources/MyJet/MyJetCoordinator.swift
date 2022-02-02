@@ -29,13 +29,22 @@ extension MyJet {
             navigationController.navigationBar.prefersLargeTitles = true
             self.navigationController = navigationController
 
-
             bindPresentedReservations(to: viewController)
             bindPushedReservations(to: navigationController)
         }
 
         deinit {
             Log.debug()
+        }
+
+        func closeAll() {
+            guard let navigationController = navigationController else { return }
+
+            let isPresenting = navigationController.presentedViewController != nil
+            if isPresenting {
+                navigationController.dismiss(animated: true)
+            }
+            navigationController.popToRootViewController(animated: !isPresenting)
         }
 
         func bindPresentedReservations(to vc: UIViewController) {
@@ -48,7 +57,8 @@ extension MyJet {
                 self?.reservationsCoordinator = reservationsCoordinator
             } else: { [weak self] in
                 // dismiss programmatically -> inform UIKit
-                self?.reservationsCoordinator?.stop(animated: true)
+//                self?.reservationsCoordinator?.stop(animated: true)
+                self?.closeAll()
             }
             .store(in: &cancelables)
         }
@@ -63,21 +73,11 @@ extension MyJet {
                 self?.reservationsCoordinator = reservationsCoordinator
             } else: { [weak self] in
                 // dismiss programmatically -> inform UIKit
-                self?.reservationsCoordinator?.stop(animated: true)
+//                self?.reservationsCoordinator?.stop(animated: true)
+                self?.closeAll()
             }
             .store(in: &cancelables)
         }
     }
 
-}
-
-
-extension Optional {
-    static var cacheLastSome: (Self) -> Self {
-        var lastWrapped: Wrapped?
-        return {
-            lastWrapped = $0 ?? lastWrapped
-            return lastWrapped
-        }
-    }
 }

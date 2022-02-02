@@ -16,6 +16,7 @@
 		797368312784B06300C0854E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 797368302784B06300C0854E /* Assets.xcassets */; };
 		797368342784B06300C0854E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 797368322784B06300C0854E /* LaunchScreen.storyboard */; };
 		7993E9CF27A92B41006565E9 /* Reservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7993E9CE27A92B41006565E9 /* Reservation.swift */; };
+		7993E9D227A974E5006565E9 /* Edit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7993E9D127A974E5006565E9 /* Edit.swift */; };
 		79AC115627903E69002F2F2C /* MyJetCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AC115527903E69002F2F2C /* MyJetCoordinator.swift */; };
 		79AC115A279057A6002F2F2C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 79AC1159279057A6002F2F2C /* ComposableArchitecture */; };
 		79AC115C279057D2002F2F2C /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AC115B279057D2002F2F2C /* Coordinator.swift */; };
@@ -38,6 +39,7 @@
 		797368332784B06300C0854E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		797368352784B06300C0854E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7993E9CE27A92B41006565E9 /* Reservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reservation.swift; sourceTree = "<group>"; };
+		7993E9D127A974E5006565E9 /* Edit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Edit.swift; sourceTree = "<group>"; };
 		79AC115527903E69002F2F2C /* MyJetCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyJetCoordinator.swift; sourceTree = "<group>"; };
 		79AC115B279057D2002F2F2C /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		79AC115E27907E12002F2F2C /* Detail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Detail.swift; sourceTree = "<group>"; };
@@ -135,14 +137,23 @@
 			path = CoordinatorTCANavigation;
 			sourceTree = "<group>";
 		};
+		7993E9D027A974D7006565E9 /* Edit */ = {
+			isa = PBXGroup;
+			children = (
+				7993E9D127A974E5006565E9 /* Edit.swift */,
+			);
+			path = Edit;
+			sourceTree = "<group>";
+		};
 		79AC115727903E7A002F2F2C /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				791E34B027A828BF00D029CD /* Delegates */,
 				791E34B127A828D500D029CD /* Utils */,
 				791E34B327A828E200D029CD /* MyJet */,
-				791E34B227A828DC00D029CD /* Detail */,
 				791E34B427A8334300D029CD /* Reservations */,
+				791E34B227A828DC00D029CD /* Detail */,
+				7993E9D027A974D7006565E9 /* Edit */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -231,6 +242,7 @@
 				79AC115C279057D2002F2F2C /* Coordinator.swift in Sources */,
 				791E34B827A8337300D029CD /* ReservationsCoordinator.swift in Sources */,
 				79BD1D9527A2FCA000C3A42E /* OptionalPaths.swift in Sources */,
+				7993E9D227A974E5006565E9 /* Edit.swift in Sources */,
 				797368282784B06000C0854E /* AppDelegate.swift in Sources */,
 				791E34AF27A8271B00D029CD /* NavigationAction.swift in Sources */,
 				791E34BA27A84C2E00D029CD /* Logger.swift in Sources */,

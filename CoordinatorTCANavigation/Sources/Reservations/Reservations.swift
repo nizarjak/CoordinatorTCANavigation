@@ -66,6 +66,7 @@ extension Reservations {
             switch action {
                 // present detail
             case .presentedDetail(.onClose), .presentedDetail(.action(.closeButtonTapped)):
+                // extract information on exit
                 if let route = state.route,
                    case let Route.presentedDetail(detailState) = route {
                     state.reservations[id: detailState.id] = Reservation.State(detail: detailState)
@@ -85,6 +86,7 @@ extension Reservations {
                 return .none
 
             case .pushedDetail(.onClose), .pushedDetail(.action(.closeButtonTapped)):
+                // extract information on exit
                 if let route = state.route,
                    case let Route.pushedDetail(detailState) = route {
                     state.reservations[id: detailState.id] = Reservation.State(detail: detailState)
@@ -92,11 +94,7 @@ extension Reservations {
                 state.route = nil
                 return.none
 
-            case .reservation:
-                // TODO: [Jakub] Implement navigation
-                return .none
-
-            case .closeButtonTapped, .pushedDetail, .presentedDetail:
+            case .closeButtonTapped, .pushedDetail, .presentedDetail, .reservation:
                 return .none
             }
         },
@@ -123,12 +121,13 @@ extension Reservations {
                     .padding()
                 }
             }
-            .navigationTitle("Reservations")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Close", action: { ViewStore(store).send(.closeButtonTapped) })
-                }
-            }
+            // currently handled in Coordinator
+//            .navigationTitle("Reservations")
+//            .toolbar {
+//                ToolbarItem(placement: .navigationBarTrailing) {
+//                    Button("Close", action: { ViewStore(store).send(.closeButtonTapped) })
+//                }
+//            }
         }
 
     }

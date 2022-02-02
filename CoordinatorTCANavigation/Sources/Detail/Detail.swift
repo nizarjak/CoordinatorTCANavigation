@@ -8,27 +8,49 @@ extension Detail {
         case closeButtonTapped
         case closeAllButtonTapped
         case likeButtonTapped
+
+        case editButtonTapped
+        case edit(Edit.Action)
+        case editClosed
     }
 
     struct State: Equatable {
         let id: String
-        let name: String
+        var name: String
         let color: Color
         var isLiked: Bool
+
+        var edit: Edit.State?
     }
 
     struct Environment {}
 
-    static let reducer = Reducer<State, Action, Environment> { state, action, _ in
-        switch action {
-        case .likeButtonTapped:
-            state.isLiked.toggle()
+    static let reducer: Reducer<State, Action, Environment> = .combine([
+        Edit.reducer.optional().pullback(state: \.edit, action: /Action.edit, environment: { _ in () }),
 
-        case .closeButtonTapped, .closeAllButtonTapped:
-            break
-        }
-        return .none
-    }
+        .init { state, action, _ in
+            switch action {
+            case .editButtonTapped:
+                state.edit = .init(name: state.name)
+
+            case .editClosed:
+                if let name = state.edit?.name {
+                    state.name = name
+                }
+                state.edit = nil
+
+            case .edit(.closeAllTapped):
+                break
+
+            case .likeButtonTapped:
+                state.isLiked.toggle()
+
+            case .closeButtonTapped, .closeAllButtonTapped, .edit:
+                break
+            }
+            return .none
+        },
+    ])
 
     struct Screen: View {
 
@@ -55,6 +77,10 @@ extension Detail {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
+                    Button("Edit") {
+                        viewStore.send(.editButtonTapped)
+                    }
+
                     Button("Close") {
                         viewStore.send(.closeButtonTapped)
                     }
@@ -63,8 +89,10 @@ extension Detail {
                         viewStore.send(.closeAllButtonTapped)
                     }
                 }
+                .sheet(item: viewStore.binding(get: \.edit, send: Action.editClosed), onDismiss: nil) { _ in
+                    IfLetStore(store.scope(state: \.edit, action: Action.edit), then: Edit.Screen.init(store:))
+                }
             }
-            .navigationTitle("Detail")
         }
     }
 }

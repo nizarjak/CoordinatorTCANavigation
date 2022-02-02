@@ -7,14 +7,21 @@ import SwiftUI
 extension Reservations {
     class Coordinator: CoordinatorType {
 
+        enum NavigationType {
+            case push
+            case present
+            case none
+        }
+
         let store: Store<State, NavigationAction<Action>>
         var rootViewController: UIViewController? { navigationController }
 
         private weak var detailCoordinator: Detail.Coordinator?
+        private var navigation: NavigationType = .none
 
         private weak var navigationController: UINavigationController?
         private weak var viewController: UIViewController?
-        
+
         private var cancelables: Set<AnyCancellable> = []
 
         init(store: Store<State, NavigationAction<Action>>) {
@@ -30,8 +37,10 @@ extension Reservations {
 
         func start(pushedTo navigationController: UINavigationController, animated: Bool = true) {
             let vc = makeReservationsVC()
-//            vc.title = "Reservations"
+            vc.title = "Reservations"
+            vc.navigationItem.rightBarButtonItem = .init(title: "Close", style: .plain, target: self, action: #selector(closeTapped))
             navigationController.pushViewController(vc, animated: animated)
+            self.navigation = .push
             self.navigationController = navigationController
 
             bindPresentedDetail(to: vc)
@@ -41,7 +50,9 @@ extension Reservations {
         func start(presentedTo viewController: UIViewController, animated: Bool = true) {
             let vc = makeReservationsVC()
             let nc = UINavigationController(rootViewController: vc)
+            nc.navigationBar.prefersLargeTitles = true
             viewController.present(nc, animated: animated)
+            self.navigation = .present
             self.viewController = viewController
             self.navigationController = nc
 
@@ -58,12 +69,21 @@ extension Reservations {
         }
 
         func makeReservationsVC(onDeinit: (() -> Void)? = nil) -> UIViewController {
-            return HostingController(
+            let vc = HostingController(
                 rootView: Reservations.Screen(store: store.scope(state: { $0 }, action: NavigationAction.action)),
                 coordinator: self,
                 onDeinit: onDeinit
             )
+            vc.title = "Reservations"
+            vc.navigationItem.rightBarButtonItem = .init(title: "Close", style: .plain, target: self, action: #selector(closeTapped))
+
+            return vc
         }
+
+        @objc private func closeTapped() {
+            ViewStore(store).send(.action(.closeButtonTapped))
+        }
+
 
         func bindPresentedDetail(to vc: UIViewController) {
             let detailPath = (\State.route).appending(path: /Route.presentedDetail)

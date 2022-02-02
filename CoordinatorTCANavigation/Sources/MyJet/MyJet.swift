@@ -72,7 +72,12 @@ extension MyJet {
             case .pushedReservations(.action(.pushedDetail(.action(.closeAllButtonTapped)))),
                     .pushedReservations(.action(.presentedDetail(.action(.closeAllButtonTapped)))),
                     .presentedReservations(.action(.pushedDetail(.action(.closeAllButtonTapped)))),
-                    .presentedReservations(.action(.presentedDetail(.action(.closeAllButtonTapped)))):
+                    .presentedReservations(.action(.presentedDetail(.action(.closeAllButtonTapped)))),
+
+                    .pushedReservations(.action(.pushedDetail(.action(.edit(.closeAllTapped))))),
+                    .pushedReservations(.action(.presentedDetail(.action(.edit(.closeAllTapped))))),
+                    .presentedReservations(.action(.pushedDetail(.action(.edit(.closeAllTapped))))),
+                    .presentedReservations(.action(.presentedDetail(.action(.edit(.closeAllTapped))))):
                 state.route = nil
                 return .none
 
