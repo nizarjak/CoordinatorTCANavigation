@@ -1,10 +1,3 @@
-//
-//  AppDelegate.swift
-//  CoordinatorTCANavigation
-//
-//  Created by Jakub Nižaradze on 04.01.2022.
-//
-
 import UIKit
 
 @main

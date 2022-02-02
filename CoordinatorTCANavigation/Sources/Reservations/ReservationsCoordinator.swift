@@ -13,9 +13,7 @@ extension Reservations {
         private weak var rootViewController: UIViewController?
 
         private var cancelables: Set<AnyCancellable> = []
-
-        var effectsToCancel: [AnyHashable] = []
-        var cancelEffects: ([AnyHashable]) -> Void
+        private var cancelEffects: ([AnyHashable]) -> Void
 
         init(store: Store<State, NavigationAction<Action>>, cancelEffects: @escaping ([AnyHashable]) -> Void) {
             Log.debug()
@@ -27,14 +25,12 @@ extension Reservations {
             Log.debug()
             // closed by interaction?
             let viewStore = ViewStore(store)
-            cancelEffects(effectsToCancel)
+            // no effects to cancel
             viewStore.send(.onClose)
         }
 
         func start(pushedTo navigationController: UINavigationController, animated: Bool = true) {
             let vc = makeReservationsVC()
-            vc.title = "Reservations"
-            vc.navigationItem.rightBarButtonItem = .init(title: "Close", style: .plain, target: self, action: #selector(closeTapped))
             navigationController.pushViewController(vc, animated: animated)
             self.navigationController = navigationController
             self.rootViewController = vc
@@ -46,7 +42,7 @@ extension Reservations {
         func start(presentedTo viewController: UIViewController, animated: Bool = true) {
             let vc = makeReservationsVC()
             let nc = UINavigationController(rootViewController: vc)
-//            nc.navigationBar.prefersLargeTitles = true
+            nc.navigationBar.prefersLargeTitles = true
             viewController.present(nc, animated: animated)
             self.navigationController = nc
             self.rootViewController = vc
@@ -86,8 +82,8 @@ extension Reservations {
                 )
                 detailCoordinator.start(presentedTo: vc)
             } else: { [weak self] in
-                // dismiss programmatically -> inform UIKit
-                self?.closeAll()
+                // state was cleared
+                self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)
             }
             .store(in: &cancelables)
         }
@@ -107,8 +103,8 @@ extension Reservations {
                 )
                 detailCoordinator.start(pushedTo: nc)
             } else: { [weak self] in
-                // dismiss programmatically -> inform UIKit
-                self?.closeAll()
+                // state was cleared
+                self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)
             }
             .store(in: &cancelables)
         }

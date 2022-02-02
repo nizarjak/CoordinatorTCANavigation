@@ -128,15 +128,7 @@ extension Reservations {
                     .padding()
                 }
             }
-            // currently handled in Coordinator
-//            .navigationTitle("Reservations")
-//            .toolbar {
-//                ToolbarItem(placement: .navigationBarTrailing) {
-//                    Button("Close", action: { ViewStore(store).send(.closeButtonTapped) })
-//                }
-//            }
         }
-
     }
 }
 

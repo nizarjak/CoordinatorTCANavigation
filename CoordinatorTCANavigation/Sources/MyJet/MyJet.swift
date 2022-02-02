@@ -124,7 +124,6 @@ extension MyJet {
 
                 Button("Deeplink") { viewStore.send(.deeplinkButtonTapped) }
             }
-            .navigationTitle("MyJet")
         }
     }
 }

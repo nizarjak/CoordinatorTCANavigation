@@ -11,12 +11,9 @@ extension Detail {
 
         private weak var navigationController: UINavigationController?
         private weak var rootViewController: UIViewController?
-        private var cancelables: Set<AnyCancellable> = []
 
-        var effectsToCancel: [AnyHashable] {
-            [Detail.Effects()]
-        }
-        var cancelEffects: ([AnyHashable]) -> Void
+        private var cancelables: Set<AnyCancellable> = []
+        private var cancelEffects: ([AnyHashable]) -> Void
 
         init(store: Store<State, NavigationAction<Action>>, cancelEffects: @escaping ([AnyHashable]) -> Void) {
             Log.debug()
@@ -27,7 +24,7 @@ extension Detail {
         deinit {
             Log.debug()
             let viewStore = ViewStore(store)
-            cancelEffects(effectsToCancel)
+            cancelEffects([Detail.Effects()])
             viewStore.send(.onClose)
         }
 
@@ -43,7 +40,7 @@ extension Detail {
         func start(presentedTo viewController: UIViewController, animated: Bool = true) {
             let vc = makeDetailVC()
             let nc = UINavigationController(rootViewController: vc)
-//            nc.navigationBar.prefersLargeTitles = true
+            nc.navigationBar.prefersLargeTitles = true
             viewController.present(nc, animated: animated)
             self.navigationController = nc
             self.rootViewController = vc
@@ -78,24 +75,10 @@ extension Detail {
                 )
                 vc.present(editVC, animated: true)
             } else: { [weak self] in
-                // dismiss programmatically -> inform UIKit
-                self?.closeAll()
+                // state was cleared
+                self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)
             }
             .store(in: &cancelables)
-        }
-
-        private func closeAll() {
-            guard let navigationController = navigationController else { return }
-
-            let isPresenting = navigationController.presentedViewController != nil
-            // pop with animation only when we're not animating any modal screen down.
-            if let rootViewController = rootViewController {
-                navigationController.popToViewController(rootViewController, animated: !isPresenting)
-            }
-            if isPresenting {
-                // if something is presenting, we can hide poping below the modal screen's animation
-                navigationController.dismiss(animated: true)
-            }
         }
     }
 }

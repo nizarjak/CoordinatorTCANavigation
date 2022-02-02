@@ -1,10 +1,3 @@
-//
-//  Logger.swift
-//  CoordinatorTCANavigation
-//
-//  Created by Jakub Nižaradze on 31.01.2022.
-//
-
 import Foundation
 
 enum Log {

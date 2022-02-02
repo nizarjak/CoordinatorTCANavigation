@@ -9,9 +9,11 @@ extension MyJet {
     class Coordinator: CoordinatorType {
 
         let store: Store<MyJet.State, MyJet.Action>
-        var rootViewController: UIViewController? { navigationController }
+        var windowRootViewController: UIViewController? { navigationController }
 
         private weak var navigationController: UINavigationController?
+        private weak var rootViewController: UIViewController?
+
         private var cancelables: Set<AnyCancellable> = []
         private var cancelEffects: ([AnyHashable]) -> Void = { _ in } // overriden in constructor
 
@@ -30,8 +32,10 @@ extension MyJet {
                 onDeinit: nil // no need to clear state as the coordinator should deallocate
             )
             let navigationController = UINavigationController(rootViewController: viewController)
-//            navigationController.navigationBar.prefersLargeTitles = true
+            viewController.title = "MyJet"
+            navigationController.navigationBar.prefersLargeTitles = true
             self.navigationController = navigationController
+            self.rootViewController = viewController
 
             bindPresentedReservations(to: viewController)
             bindPushedReservations(to: navigationController)
@@ -39,18 +43,6 @@ extension MyJet {
 
         deinit {
             Log.debug()
-        }
-
-        private func closeAll() {
-            guard let navigationController = navigationController else { return }
-
-            let isPresenting = navigationController.presentedViewController != nil
-            if isPresenting {
-                // if something is presenting, we can hide poping below the modal screen's animation
-                navigationController.dismiss(animated: true)
-            }
-            // pop with animation only when we're not animating any modal screen down.
-            navigationController.popToRootViewController(animated: !isPresenting)
         }
 
         private func bindPresentedReservations(to vc: UIViewController) {
@@ -65,9 +57,8 @@ extension MyJet {
                 )
                 reservationsCoordinator.start(presentedTo: vc)
             } else: { [weak self] in
-                // dismiss programmatically -> inform UIKit
-//                self?.reservationsCoordinator?.stop(animated: true)
-                self?.closeAll()
+                // state was cleared
+                self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)
             }
             .store(in: &cancelables)
         }
@@ -84,9 +75,8 @@ extension MyJet {
                 )
                 reservationsCoordinator.start(pushedTo: nc)
             } else: { [weak self] in
-                // dismiss programmatically -> inform UIKit
-//                self?.reservationsCoordinator?.stop(animated: true)
-                self?.closeAll()
+                // state was cleared
+                self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)
             }
             .store(in: &cancelables)
         }

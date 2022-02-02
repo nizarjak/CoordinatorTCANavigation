@@ -1,5 +1,3 @@
-//
-//  SceneDelegate.swift
 import UIKit
 import ComposableArchitecture
 
@@ -20,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 environment: MyJet.Environment()
             )
         )
-        window.rootViewController = appCoordinator.rootViewController
+        window.rootViewController = appCoordinator.windowRootViewController
 
         self.window = window
         self.appCoordinator = appCoordinator
