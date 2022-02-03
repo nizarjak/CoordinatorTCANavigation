@@ -7,9 +7,10 @@ import SwiftUI
 extension MyJet {
 
     class Coordinator: CoordinatorType {
-
         let store: Store<MyJet.State, MyJet.Action>
         var windowRootViewController: UIViewController? { navigationController }
+
+        weak var coordinator: BaseCoordinatorType?
 
         private weak var navigationController: UINavigationController?
         private weak var rootViewController: UIViewController?
@@ -45,6 +46,10 @@ extension MyJet {
             Log.debug()
         }
 
+        func cleanup() {
+            // nothing to clean
+        }
+
         private func bindPresentedReservations(to vc: UIViewController) {
             let reservationsPath = (\State.route).appending(path: /Route.presentedReservations)
             let reservationsStore = store.scope(state: reservationsPath.extract(from:), action: Action.presentedReservations)
@@ -56,6 +61,7 @@ extension MyJet {
                     cancelEffects: self.cancelEffects
                 )
                 reservationsCoordinator.start(presentedTo: vc)
+                self.coordinator = reservationsCoordinator
             } else: { [weak self] in
                 // state was cleared
                 self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)
@@ -74,6 +80,7 @@ extension MyJet {
                     cancelEffects: self.cancelEffects
                 )
                 reservationsCoordinator.start(pushedTo: nc)
+                self.coordinator = reservationsCoordinator
             } else: { [weak self] in
                 // state was cleared
                 self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)

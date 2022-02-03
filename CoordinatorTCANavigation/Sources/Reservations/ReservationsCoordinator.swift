@@ -9,6 +9,8 @@ extension Reservations {
 
         let store: Store<State, NavigationAction<Action>>
 
+        weak var coordinator: CoordinatorType?
+
         private weak var navigationController: UINavigationController?
         private weak var rootViewController: UIViewController?
 
@@ -23,10 +25,10 @@ extension Reservations {
 
         deinit {
             Log.debug()
-            // closed by interaction?
-            let viewStore = ViewStore(store)
-            // no effects to cancel
-            viewStore.send(.onClose)
+        }
+
+        func cleanup() {
+            // nothing to clean
         }
 
         func start(pushedTo navigationController: UINavigationController, animated: Bool = true) {
@@ -81,6 +83,7 @@ extension Reservations {
                     cancelEffects: self.cancelEffects
                 )
                 detailCoordinator.start(presentedTo: vc)
+                self.coordinator = detailCoordinator
             } else: { [weak self] in
                 // state was cleared
                 self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)
@@ -102,6 +105,7 @@ extension Reservations {
                     cancelEffects: self.cancelEffects
                 )
                 detailCoordinator.start(pushedTo: nc)
+                self.coordinator = detailCoordinator
             } else: { [weak self] in
                 // state was cleared
                 self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)

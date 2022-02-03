@@ -9,6 +9,8 @@ extension Detail {
 
         let store: Store<State, NavigationAction<Action>>
 
+        weak var coordinator: CoordinatorType?
+
         private weak var navigationController: UINavigationController?
         private weak var rootViewController: UIViewController?
 
@@ -23,9 +25,11 @@ extension Detail {
 
         deinit {
             Log.debug()
-            let viewStore = ViewStore(store)
+        }
+
+        func cleanup() {
+            // nothing to clean
             cancelEffects([Detail.Effects()])
-            viewStore.send(.onClose)
         }
 
         func start(pushedTo navigationController: UINavigationController, animated: Bool = true) {

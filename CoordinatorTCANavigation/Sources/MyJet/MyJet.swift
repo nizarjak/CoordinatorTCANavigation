@@ -50,7 +50,7 @@ extension MyJet {
                 return Effect.cancel(ids: hashables)
 
             // present Reservations
-            case .presentedReservations(.onClose), .presentedReservations(.action(.closeButtonTapped)):
+            case .presentedReservations(.onInteractiveClose), .presentedReservations(.action(.closeButtonTapped)):
                 state.route = nil
                 return .none
 
@@ -63,7 +63,7 @@ extension MyJet {
                 state.route = .pushedReservations(.init())
                 return .none
 
-            case .pushedReservations(.onClose), .pushedReservations(.action(.closeButtonTapped)):
+            case .pushedReservations(.onInteractiveClose), .pushedReservations(.action(.closeButtonTapped)):
                 state.route = nil
                 return.none
 
@@ -90,10 +90,10 @@ extension MyJet {
                 state.route = nil
                 return .none
 
-            case .pushedReservations(.action(.pushedDetail(.onClose))),
-                    .pushedReservations(.action(.presentedDetail(.onClose))),
-                    .presentedReservations(.action(.pushedDetail(.onClose))),
-                    .presentedReservations(.action(.presentedDetail(.onClose))):
+            case .pushedReservations(.action(.pushedDetail(.onInteractiveClose))),
+                    .pushedReservations(.action(.presentedDetail(.onInteractiveClose))),
+                    .presentedReservations(.action(.pushedDetail(.onInteractiveClose))),
+                    .presentedReservations(.action(.presentedDetail(.onInteractiveClose))):
                 Log.debug("detail onClose called")
                 return .none
 
