@@ -5,29 +5,18 @@ import Combine
 import SwiftUI
 
 extension Detail {
-    class Coordinator: CoordinatorType {
-
-        let store: Store<State, NavigationAction<Action>>
-
-        weak var coordinator: CoordinatorType?
+    class Coordinator: BaseCoordinator<State, Action> {
 
         private weak var navigationController: UINavigationController?
         private weak var rootViewController: UIViewController?
 
         private var cancelables: Set<AnyCancellable> = []
-        private var cancelEffects: ([AnyHashable]) -> Void
-
-        init(store: Store<State, NavigationAction<Action>>, cancelEffects: @escaping ([AnyHashable]) -> Void) {
-            Log.debug()
-            self.store = store
-            self.cancelEffects = cancelEffects
-        }
 
         deinit {
             Log.debug()
         }
 
-        func cleanup() {
+        override func cleanup() {
             // nothing to clean
             cancelEffects([Detail.Effects()])
         }
@@ -55,7 +44,7 @@ extension Detail {
         private func makeDetailVC() -> UIViewController {
             let vc = HostingController(
                 rootView: Detail.Screen(store: store.scope(action: NavigationAction.action)),
-                coordinator: self
+                strongReference: self
             )
             vc.title = "Detail"
 
@@ -74,7 +63,7 @@ extension Detail {
 
                 let editVC = HostingController(
                     rootView: Edit.Screen(store: honestEditStore.scope(action: NavigationAction.action)),
-                    coordinator: self,
+                    strongReference: self,
                     onDeinit: nil
                 )
                 vc.present(editVC, animated: true)

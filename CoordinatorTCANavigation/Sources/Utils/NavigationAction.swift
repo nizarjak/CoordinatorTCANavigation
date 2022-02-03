@@ -1,8 +1,8 @@
 import Foundation
 
-enum NavigationAction<Action: Equatable>: Equatable {
+public enum NavigationAction<Action: Equatable>: Equatable {
     case action(Action)
-    case onInteractiveClose
+    case onSystemClose
 }
 
 import ComposableArchitecture

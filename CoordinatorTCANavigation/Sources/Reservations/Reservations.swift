@@ -65,7 +65,7 @@ extension Reservations {
         .init { state, action, _ in
             switch action {
                 // present detail
-            case .presentedDetail(.onInteractiveClose), .presentedDetail(.action(.closeButtonTapped)):
+            case .presentedDetail(.onSystemClose), .presentedDetail(.action(.closeButtonTapped)):
                 // extract information on exit
                 if let route = state.route,
                    case let Route.presentedDetail(detailState) = route {
@@ -85,7 +85,7 @@ extension Reservations {
                 state.route = .pushedDetail(.init(reservation: reservation))
                 return .none
 
-            case .pushedDetail(.onInteractiveClose), .pushedDetail(.action(.closeButtonTapped)):
+            case .pushedDetail(.onSystemClose), .pushedDetail(.action(.closeButtonTapped)):
                 // extract information on exit
                 if let route = state.route,
                    case let Route.pushedDetail(detailState) = route {

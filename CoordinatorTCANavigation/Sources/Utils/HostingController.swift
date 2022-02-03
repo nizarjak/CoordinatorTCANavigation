@@ -3,11 +3,11 @@ import SwiftUI
 class HostingController<Content>: UIHostingController<Content> where Content : View {
 
     // strong reference
-    let coordinator: CoordinatorType
+    let strongReference: AnyObject
     let onDeinit: (() -> Void)?
 
-    init(rootView: Content, coordinator: CoordinatorType, onDeinit: (() -> Void)? = nil) {
-        self.coordinator = coordinator
+    init(rootView: Content, strongReference: AnyObject, onDeinit: (() -> Void)? = nil) {
+        self.strongReference = strongReference
         self.onDeinit = onDeinit
         super.init(rootView: rootView)
     }

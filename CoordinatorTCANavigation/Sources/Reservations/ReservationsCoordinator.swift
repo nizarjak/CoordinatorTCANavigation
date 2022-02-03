@@ -5,30 +5,15 @@ import Combine
 import SwiftUI
 
 extension Reservations {
-    class Coordinator: CoordinatorType {
-
-        let store: Store<State, NavigationAction<Action>>
-
-        weak var coordinator: CoordinatorType?
+    class Coordinator: BaseCoordinator<State, Action> {
 
         private weak var navigationController: UINavigationController?
         private weak var rootViewController: UIViewController?
 
         private var cancelables: Set<AnyCancellable> = []
-        private var cancelEffects: ([AnyHashable]) -> Void
-
-        init(store: Store<State, NavigationAction<Action>>, cancelEffects: @escaping ([AnyHashable]) -> Void) {
-            Log.debug()
-            self.store = store
-            self.cancelEffects = cancelEffects
-        }
 
         deinit {
             Log.debug()
-        }
-
-        func cleanup() {
-            // nothing to clean
         }
 
         func start(pushedTo navigationController: UINavigationController, animated: Bool = true) {
@@ -56,7 +41,7 @@ extension Reservations {
         private func makeReservationsVC(onDeinit: (() -> Void)? = nil) -> UIViewController {
             let vc = HostingController(
                 rootView: Reservations.Screen(store: store.scope(action: NavigationAction.action)),
-                coordinator: self,
+                strongReference: self,
                 onDeinit: onDeinit
             )
             vc.title = "Reservations"
@@ -70,47 +55,29 @@ extension Reservations {
         }
 
         private func bindPresentedDetail(to vc: UIViewController) {
-            let detailPath = (\State.route).appending(path: /Route.presentedDetail)
-            let detailStore = store.scope(
-                state: detailPath.extract(from:),
-                action: (/NavigationAction<Action>.action).appending(path: /Action.presentedDetail).embed
-            )
-
-            detailStore.ifLet { [weak self, weak vc] honestDetailStore in
-                guard let vc = vc, let self = self else { return }
-                let detailCoordinator = Detail.Coordinator(
-                    store: honestDetailStore,
-                    cancelEffects: self.cancelEffects
-                )
-                detailCoordinator.start(presentedTo: vc)
-                self.coordinator = detailCoordinator
-            } else: { [weak self] in
-                // state was cleared
+            bindToState(
+                state: (\State.route).appending(path: /Route.presentedDetail),
+                action: (/NavigationAction<Action>.action).appending(path: /Action.presentedDetail)
+            ) { coordinatorStore, cancelEffects in
+                let coord = Detail.Coordinator(store: coordinatorStore, cancelEffects: cancelEffects)
+                coord.start(presentedTo: vc)
+                return coord
+            } onClose: { [weak self] in
                 self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)
             }
-            .store(in: &cancelables)
         }
 
-        private func bindPushedDetail(to vc: UINavigationController) {
-            let detailPath = (\State.route).appending(path: /Route.pushedDetail)
-            let detailStore = store.scope(
-                state: detailPath.extract(from:),
-                action: (/NavigationAction<Action>.action).appending(path: /Action.pushedDetail).embed
-            )
-
-            detailStore.ifLet { [weak self] honestDetailStore in
-                guard let nc = self?.navigationController, let self = self else { return }
-                let detailCoordinator = Detail.Coordinator(
-                    store: honestDetailStore,
-                    cancelEffects: self.cancelEffects
-                )
-                detailCoordinator.start(pushedTo: nc)
-                self.coordinator = detailCoordinator
-            } else: { [weak self] in
-                // state was cleared
+        private func bindPushedDetail(to nc: UINavigationController) {
+            bindToState(
+                state: (\State.route).appending(path: /Route.pushedDetail),
+                action: (/NavigationAction<Action>.action).appending(path: /Action.pushedDetail)
+            ) { coordinatorStore, cancelEffects in
+                let coord = Detail.Coordinator(store: coordinatorStore, cancelEffects: cancelEffects)
+                coord.start(pushedTo: nc)
+                return coord
+            } onClose: { [weak self] in
                 self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)
             }
-            .store(in: &cancelables)
         }
 
         private func closeAll() {

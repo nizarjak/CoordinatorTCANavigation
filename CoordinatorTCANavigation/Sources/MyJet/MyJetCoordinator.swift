@@ -6,7 +6,7 @@ import SwiftUI
 
 extension MyJet {
 
-    class Coordinator: CoordinatorType {
+    class Coordinator: BaseCoordinatorType {
         let store: Store<MyJet.State, MyJet.Action>
         var windowRootViewController: UIViewController? { navigationController }
 
@@ -29,7 +29,7 @@ extension MyJet {
 
             let viewController = HostingController(
                 rootView: MyJet.Screen(store: store),
-                coordinator: self,
+                strongReference: self,
                 onDeinit: nil // no need to clear state as the coordinator should deallocate
             )
             let navigationController = UINavigationController(rootViewController: viewController)
@@ -46,8 +46,8 @@ extension MyJet {
             Log.debug()
         }
 
-        func cleanup() {
-            // nothing to clean
+        func recursiveCleanup() {
+            // empty for now
         }
 
         private func bindPresentedReservations(to vc: UIViewController) {
