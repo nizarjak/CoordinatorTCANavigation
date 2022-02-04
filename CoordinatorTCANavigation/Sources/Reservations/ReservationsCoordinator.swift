@@ -5,12 +5,7 @@ import Combine
 import SwiftUI
 
 extension Reservations {
-    class Coordinator: BaseCoordinator<State, Action> {
-
-        private weak var navigationController: UINavigationController?
-        private weak var rootViewController: UIViewController?
-
-        private var cancelables: Set<AnyCancellable> = []
+    class Coordinator: BaseCoordinator<State, Action>, PresentableCoordinator, PushableCoordinator {
 
         override init(store: Store<Reservations.State, NavigationAction<Reservations.Action>>) {
             super.init(store: store)
@@ -24,8 +19,6 @@ extension Reservations {
         func start(pushedTo navigationController: UINavigationController, animated: Bool = true) {
             let vc = makeReservationsVC()
             navigationController.pushViewController(vc, animated: animated)
-            self.navigationController = navigationController
-            self.rootViewController = vc
 
             bindPresentedDetail(to: vc)
             bindPushedDetail(to: navigationController)
@@ -36,8 +29,6 @@ extension Reservations {
             let nc = UINavigationController(rootViewController: vc)
             nc.navigationBar.prefersLargeTitles = true
             viewController.present(nc, animated: animated)
-            self.navigationController = nc
-            self.rootViewController = vc
 
             bindPresentedDetail(to: vc)
             bindPushedDetail(to: nc)

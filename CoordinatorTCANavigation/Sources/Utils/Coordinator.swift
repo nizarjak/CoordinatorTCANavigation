@@ -10,7 +10,6 @@ public protocol PushableCoordinator: BaseCoordinatorType {
 
 public protocol PresentableCoordinator: BaseCoordinatorType {
     var cancelEffects: ([AnyHashable]) -> Void { get set }
-//    func start(presentedTo viewController: UIViewController)
     func start(presentedTo viewController: UIViewController, animated: Bool)
 }
 
