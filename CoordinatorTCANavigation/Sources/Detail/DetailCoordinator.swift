@@ -5,12 +5,17 @@ import Combine
 import SwiftUI
 
 extension Detail {
-    class Coordinator: BaseCoordinator<State, Action> {
+    class Coordinator: BaseCoordinator<State, Action>, PushableCoordinator, PresentableCoordinator {
 
         private weak var navigationController: UINavigationController?
         private weak var rootViewController: UIViewController?
 
         private var cancelables: Set<AnyCancellable> = []
+
+        override init(store: Store<Detail.State, NavigationAction<Detail.Action>>) {
+            super.init(store: store)
+            Log.debug()
+        }
 
         deinit {
             Log.debug()

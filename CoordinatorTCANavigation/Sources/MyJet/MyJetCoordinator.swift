@@ -54,12 +54,12 @@ extension MyJet {
             let reservationsPath = (\State.route).appending(path: /Route.presentedReservations)
             let reservationsStore = store.scope(state: reservationsPath.extract(from:), action: Action.presentedReservations)
 
-            reservationsStore.ifLet { [weak self] honestReservationsStore in
-                guard let self = self else { return }
+            reservationsStore.ifLet { [weak self, weak vc] honestReservationsStore in
+                guard let self = self, let vc = vc else { return }
                 let reservationsCoordinator = Reservations.Coordinator(
-                    store: honestReservationsStore,
-                    cancelEffects: self.cancelEffects
+                    store: honestReservationsStore
                 )
+                reservationsCoordinator.cancelEffects = self.cancelEffects
                 reservationsCoordinator.start(presentedTo: vc)
                 self.coordinator = reservationsCoordinator
             } else: { [weak self] in
@@ -73,12 +73,12 @@ extension MyJet {
             let reservationsPath = (\State.route).appending(path: /Route.pushedReservations)
             let reservationsStore = store.scope(state: reservationsPath.extract(from:), action: Action.pushedReservations)
 
-            reservationsStore.ifLet { [weak self] honestReservationsStore in
-                guard let self = self else { return }
+            reservationsStore.ifLet { [weak self, weak nc] honestReservationsStore in
+                guard let self = self, let nc = nc else { return }
                 let reservationsCoordinator = Reservations.Coordinator(
-                    store: honestReservationsStore,
-                    cancelEffects: self.cancelEffects
+                    store: honestReservationsStore
                 )
+                reservationsCoordinator.cancelEffects = self.cancelEffects
                 reservationsCoordinator.start(pushedTo: nc)
                 self.coordinator = reservationsCoordinator
             } else: { [weak self] in
