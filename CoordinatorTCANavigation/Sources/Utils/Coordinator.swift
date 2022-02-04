@@ -14,17 +14,17 @@ public protocol PresentableCoordinator: BaseCoordinatorType {
 }
 
 public protocol BaseCoordinatorType: AnyObject {
-    var coordinator: BaseCoordinatorType? { get set }
+    var childCoordinator: BaseCoordinatorType? { get set }
     func recursiveCleanup()
 }
 
 extension BaseCoordinatorType {
-    /// Handles proper animation and coordinator cleanup.
+    /// Handles proper animation and childCoordinator cleanup.
     /// This should be called from the first coordinator that will survive the navigation - the one who clears the state.
     func closeAll(inside navigationController: UINavigationController?, until rootViewController: UIViewController?) {
         // cleaning only childs as this coordinator should not be cleaned.
-        coordinator?.recursiveCleanup()
-        coordinator = nil // so we don't clean coordinator multiple times
+        childCoordinator?.recursiveCleanup()
+        childCoordinator = nil // so we don't clean childCoordinator multiple times
 
         // No need to handle navigation if it already happened
         guard let navigationController = navigationController else { return }
@@ -45,7 +45,7 @@ open class BaseCoordinator<State, Action>: BaseCoordinatorType where State: Equa
 
     public let store: Store<State, NavigationAction<Action>>
 
-    public weak var coordinator: BaseCoordinatorType?
+    public weak var childCoordinator: BaseCoordinatorType?
 
     /// We're getting closed by the parent. The state was already niled and we're reacting to that.
     private var isClosedByStateChange: Bool = false
@@ -74,7 +74,7 @@ open class BaseCoordinator<State, Action>: BaseCoordinatorType where State: Equa
 
     public func recursiveCleanup() {
         // childs will clean itself first
-        self.coordinator?.recursiveCleanup()
+        self.childCoordinator?.recursiveCleanup()
         self.isClosedByStateChange = true
         self.cleanup()
     }
@@ -96,7 +96,7 @@ open class BaseCoordinator<State, Action>: BaseCoordinatorType where State: Equa
             then: { [weak self] honestLocalStore in
                 guard let self = self else { return }
                 let coordinator = openCoordinator(honestLocalStore, { [weak self] in self?.cancelEffects($0) })
-                self.coordinator = coordinator
+                self.childCoordinator = coordinator
             },
             else: onClose
         )
@@ -124,15 +124,15 @@ open class BaseCoordinator<State, Action>: BaseCoordinatorType where State: Equa
                 let coordinator = makeCoordinator(honestLocalStore)
                 coordinator.cancelEffects = self.cancelEffects
                 coordinator.start(presentedTo: viewController, animated: true)
-                self.coordinator = coordinator
+                self.childCoordinator = coordinator
                 presented = true
             },
             else: { [weak self, weak viewController] in
                 guard presented else { return } // we didn't present anything yet
                 guard let self = self else { return }
                 // cleaning only childs as this coordinator should not be cleaned.
-                self.coordinator?.recursiveCleanup()
-                self.coordinator = nil // so we don't clean coordinator multiple times
+                self.childCoordinator?.recursiveCleanup()
+                self.childCoordinator = nil // so we don't clean childCoordinator multiple times
 
                 viewController?.dismiss(animated: true)
             }
@@ -165,15 +165,15 @@ open class BaseCoordinator<State, Action>: BaseCoordinatorType where State: Equa
                 coordinator.cancelEffects = self.cancelEffects
                 startViewController.value = navigationController.topViewController
                 coordinator.start(pushedTo: navigationController, animated: true)
-                self.coordinator = coordinator
+                self.childCoordinator = coordinator
                 pushed = true
             },
             else: { [weak self, weak navigationController] in
                 guard pushed else { return } // we didn't push anything yet
                 guard let self = self else { return }
                 // cleaning only childs as this coordinator should not be cleaned.
-                self.coordinator?.recursiveCleanup()
-                self.coordinator = nil // so we don't clean coordinator multiple times
+                self.childCoordinator?.recursiveCleanup()
+                self.childCoordinator = nil // so we don't clean childCoordinator multiple times
 
                 guard let navigationController = navigationController else { return }
 

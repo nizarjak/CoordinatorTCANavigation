@@ -10,7 +10,7 @@ extension MyJet {
         let store: Store<MyJet.State, MyJet.Action>
         var windowRootViewController: UIViewController? { navigationController }
 
-        weak var coordinator: BaseCoordinatorType?
+        weak var childCoordinator: BaseCoordinatorType?
 
         private weak var navigationController: UINavigationController?
         private weak var rootViewController: UIViewController?
@@ -61,7 +61,7 @@ extension MyJet {
                 )
                 reservationsCoordinator.cancelEffects = self.cancelEffects
                 reservationsCoordinator.start(presentedTo: vc)
-                self.coordinator = reservationsCoordinator
+                self.childCoordinator = reservationsCoordinator
             } else: { [weak self] in
                 // state was cleared
                 self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)
@@ -80,7 +80,7 @@ extension MyJet {
                 )
                 reservationsCoordinator.cancelEffects = self.cancelEffects
                 reservationsCoordinator.start(pushedTo: nc)
-                self.coordinator = reservationsCoordinator
+                self.childCoordinator = reservationsCoordinator
             } else: { [weak self] in
                 // state was cleared
                 self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)
