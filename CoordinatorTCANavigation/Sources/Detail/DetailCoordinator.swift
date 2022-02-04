@@ -57,26 +57,12 @@ extension Detail {
         }
 
         private func bindPresentedEdit(to vc: UIViewController) {
-            let editPath = (\State.route).appending(path: /Route.edit)
-            let editStore = store.scope(
-                state: editPath.extract(from:),
-                action: (/NavigationAction<Action>.action).appending(path: /Action.editCoordinator).embed
+            present(
+                state: (\State.route).appending(path: /Route.edit),
+                action: (/NavigationAction<Action>.action).appending(path: /Action.editCoordinator),
+                into: vc,
+                coordinator: Edit.Coordinator.init(store:)
             )
-
-            editStore.ifLet { [weak self, weak vc] honestEditStore in
-                guard let vc = vc, let self = self else { return }
-
-                let editVC = HostingController(
-                    rootView: Edit.Screen(store: honestEditStore.scope(action: NavigationAction.action)),
-                    strongReference: self,
-                    onDeinit: nil
-                )
-                vc.present(editVC, animated: true)
-            } else: { [weak self] in
-                // state was cleared
-                self?.closeAll(inside: self?.navigationController, until: self?.rootViewController)
-            }
-            .store(in: &cancelables)
         }
     }
 }

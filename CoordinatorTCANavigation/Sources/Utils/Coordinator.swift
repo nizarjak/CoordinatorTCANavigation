@@ -111,6 +111,9 @@ open class BaseCoordinator<State, Action>: BaseCoordinatorType where State: Equa
             Store<LocalState, NavigationAction<LocalAction>>
         ) -> PresentableCoordinator
     ) {
+        // if we've already presented something
+        var presented = false
+
         store.scope(
             state: toLocalState.extract(from:),
             action: toLocalAction.embed
@@ -122,8 +125,10 @@ open class BaseCoordinator<State, Action>: BaseCoordinatorType where State: Equa
                 coordinator.cancelEffects = self.cancelEffects
                 coordinator.start(presentedTo: viewController, animated: true)
                 self.coordinator = coordinator
+                presented = true
             },
             else: { [weak self, weak viewController] in
+                guard presented else { return } // we didn't present anything yet
                 guard let self = self else { return }
                 // cleaning only childs as this coordinator should not be cleaned.
                 self.coordinator?.recursiveCleanup()
@@ -143,6 +148,9 @@ open class BaseCoordinator<State, Action>: BaseCoordinatorType where State: Equa
             Store<LocalState, NavigationAction<LocalAction>>
         ) -> PushableCoordinator
     ) {
+        // if we've already pushed something
+        var pushed = false
+        // weakly referencing top controller before pushing so we know where to return
         let startViewController = Box<UIViewController>()
 
         store.scope(
@@ -158,8 +166,10 @@ open class BaseCoordinator<State, Action>: BaseCoordinatorType where State: Equa
                 startViewController.value = navigationController.topViewController
                 coordinator.start(pushedTo: navigationController, animated: true)
                 self.coordinator = coordinator
+                pushed = true
             },
             else: { [weak self, weak navigationController] in
+                guard pushed else { return } // we didn't push anything yet
                 guard let self = self else { return }
                 // cleaning only childs as this coordinator should not be cleaned.
                 self.coordinator?.recursiveCleanup()

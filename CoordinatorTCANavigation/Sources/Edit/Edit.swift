@@ -43,4 +43,15 @@ extension Edit {
             }
         }
     }
+
+    class Coordinator: BaseCoordinator<State, Action>, PresentableCoordinator {
+        func start(presentedTo viewController: UIViewController, animated: Bool) {
+            let vc = HostingController(
+                rootView: Edit.Screen(store: store.scope(action: NavigationAction.action)),
+                strongReference: self
+            )
+            viewController.present(vc, animated: animated)
+        }
+    }
 }
+
