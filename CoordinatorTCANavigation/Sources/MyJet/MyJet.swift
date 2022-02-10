@@ -69,7 +69,7 @@ extension MyJet {
 
             // deeplink
             case .deeplinkButtonTapped:
-                state.route = .presentedReservations(.init(route: .presentedDetail(.init(id: "color-1", name: "Blue", color: .blue, isLiked: false))))
+//                state.route = .presentedReservations(.init(route: .presentedDetail(.init(id: "color-1", name: "Blue", color: .blue, isLiked: false))))
                 return .none
 
             // close all

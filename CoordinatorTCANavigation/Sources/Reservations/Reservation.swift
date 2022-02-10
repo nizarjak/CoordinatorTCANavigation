@@ -5,11 +5,19 @@ import ComposableArchitecture
 enum Reservation {}
 
 extension Reservation {
+
+    enum Route: Equatable {
+        case pushedDetail(Detail.State)
+        case presentedDetail(Detail.State)
+    }
+
     struct State: Equatable, Identifiable {
         let id: String
         let name: String
         let color: Color
         var isLiked: Bool
+
+        var route: Route?
     }
 
     enum Action: Equatable {
@@ -18,16 +26,32 @@ extension Reservation {
         case likeButtonTapped
     }
 
-    static let reducer = Reducer<State, Action, Void> { state, action, _ in
-        switch action {
-        case .likeButtonTapped:
-            state.isLiked.toggle()
+    static let reducer: Reducer<State, Action, Void> = .combine([
+        // pushed
+        Detail.reducer._pullback(
+            state: (\State.route).appending(path: /Route.pushedDetail),
+            action: (/Action.pushedDetail).appending(path: /NavigationAction<Detail.Action>.action),
+            environment: \Environment.detail
+        ),
 
-        case .pushButtonTapped, .presentButtonTapped:
-            break
-        }
-        return .none
-    }
+        // presented
+        Detail.reducer._pullback(
+            state: (\State.route).appending(path: /Route.presentedDetail),
+            action: (/Action.presentedDetail).appending(path: /NavigationAction<Detail.Action>.action),
+            environment: \Environment.detail
+        ),
+
+        .init { state, action, _ in
+           switch action {
+           case .likeButtonTapped:
+               state.isLiked.toggle()
+
+           case .pushButtonTapped, .presentButtonTapped:
+               break
+           }
+           return .none
+       }
+    ])
 
     struct View: SwiftUI.View {
 

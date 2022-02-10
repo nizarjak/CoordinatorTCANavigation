@@ -6,8 +6,9 @@ enum Reservations {}
 extension Reservations {
 
     enum Route: Equatable {
-        case pushedDetail(Detail.State)
-        case presentedDetail(Detail.State)
+//        case pushedDetail(Detail.State)
+//        case presentedDetail(Detail.State)
+        case reservation(String, Reservation.Route)
     }
 
     struct State: Equatable {
@@ -25,9 +26,6 @@ extension Reservations {
     }
 
     enum Action: Equatable {
-        case pushedDetail(NavigationAction<Detail.Action>)
-        case presentedDetail(NavigationAction<Detail.Action>)
-
         case reservation(String, Reservation.Action)
 
         case closeButtonTapped
@@ -40,20 +38,6 @@ extension Reservations {
     }
 
     static let reducer: Reducer<State, Action, Environment> = .combine([
-        // pushed
-        Detail.reducer._pullback(
-            state: (\State.route).appending(path: /Route.pushedDetail),
-            action: (/Action.pushedDetail).appending(path: /NavigationAction<Detail.Action>.action),
-            environment: \Environment.detail
-        ),
-
-        // presented
-        Detail.reducer._pullback(
-            state: (\State.route).appending(path: /Route.presentedDetail),
-            action: (/Action.presentedDetail).appending(path: /NavigationAction<Detail.Action>.action),
-            environment: \Environment.detail
-        ),
-
         // reservations - items
         Reservation.reducer.forEach(
             state: \.reservations,
@@ -64,44 +48,7 @@ extension Reservations {
         // navigation
         .init { state, action, _ in
             switch action {
-                // present detail
-            case .presentedDetail(.onSystemClose), .presentedDetail(.action(.closeButtonTapped)):
-                // extract information on exit
-                if let route = state.route,
-                   case let Route.presentedDetail(detailState) = route {
-                    state.reservations[id: detailState.id] = Reservation.State(detail: detailState)
-                }
-                state.route = nil
-                return .none
-
-            case let .reservation(id, .presentButtonTapped):
-                guard let reservation = state.reservations[id: id] else { return .none }
-                state.route = .presentedDetail(.init(reservation: reservation))
-                return .none
-
-                // push detail
-            case let .reservation(id, .pushButtonTapped):
-                guard let reservation = state.reservations[id: id] else { return .none }
-                state.route = .pushedDetail(.init(reservation: reservation))
-                return .none
-
-            case .pushedDetail(.onSystemClose), .pushedDetail(.action(.closeButtonTapped)):
-                // extract information on exit
-                if let route = state.route,
-                   case let Route.pushedDetail(detailState) = route {
-                    state.reservations[id: detailState.id] = Reservation.State(detail: detailState)
-                }
-                state.route = nil
-                return.none
-
-            case .pushedDetail(.action(.editSwiftUI(.closeToReservationsTapped))),
-                    .pushedDetail(.action(.editCoordinator(.action(.closeToReservationsTapped)))),
-                    .presentedDetail(.action(.editSwiftUI(.closeToReservationsTapped))),
-                    .presentedDetail(.action(.editCoordinator(.action(.closeToReservationsTapped)))):
-                state.route = nil
-                return .none
-
-            case .closeButtonTapped, .pushedDetail, .presentedDetail, .reservation:
+            case .closeButtonTapped, .reservation:
                 return .none
             }
         },
