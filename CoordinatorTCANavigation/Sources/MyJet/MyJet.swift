@@ -73,29 +73,27 @@ extension MyJet {
                 return .none
 
             // close all
-            case .pushedReservations(.action(.pushedDetail(.action(.closeAllButtonTapped)))),
-                    .pushedReservations(.action(.presentedDetail(.action(.closeAllButtonTapped)))),
-                    .presentedReservations(.action(.pushedDetail(.action(.closeAllButtonTapped)))),
-                    .presentedReservations(.action(.presentedDetail(.action(.closeAllButtonTapped)))),
-
-                    .pushedReservations(.action(.pushedDetail(.action(.editSwiftUI(.closeAllTapped))))),
-                    .pushedReservations(.action(.presentedDetail(.action(.editSwiftUI(.closeAllTapped))))),
-                    .presentedReservations(.action(.pushedDetail(.action(.editSwiftUI(.closeAllTapped))))),
-                    .presentedReservations(.action(.presentedDetail(.action(.editSwiftUI(.closeAllTapped))))),
-
-                    .pushedReservations(.action(.pushedDetail(.action(.editCoordinator(.action(.closeAllTapped)))))),
-                    .pushedReservations(.action(.presentedDetail(.action(.editCoordinator(.action(.closeAllTapped)))))),
-                    .presentedReservations(.action(.pushedDetail(.action(.editCoordinator(.action(.closeAllTapped)))))),
-                    .presentedReservations(.action(.presentedDetail(.action(.editCoordinator(.action(.closeAllTapped)))))):
+            case .pushedReservations(.action(.reservation(_, .pushedDetail(.action(.closeAllButtonTapped))))),
+                    .pushedReservations(.action(.reservation(_, .presentedDetail(.action(.closeAllButtonTapped))))),
+                    .presentedReservations(.action(.reservation(_, .pushedDetail(.action(.closeAllButtonTapped))))),
+                    .presentedReservations(.action(.reservation(_, .presentedDetail(.action(.closeAllButtonTapped))))),
+                    .pushedReservations(.action(.reservation(_, .pushedDetail(.action(.editSwiftUI(.closeAllTapped)))))),
+                    .pushedReservations(.action(.reservation(_, .presentedDetail(.action(.editSwiftUI(.closeAllTapped)))))),
+                    .presentedReservations(.action(.reservation(_, .pushedDetail(.action(.editSwiftUI(.closeAllTapped)))))),
+                    .presentedReservations(.action(.reservation(_, .presentedDetail(.action(.editSwiftUI(.closeAllTapped)))))),
+                    .pushedReservations(.action(.reservation(_, .pushedDetail(.action(.editCoordinator(.action(.closeAllTapped))))))),
+                    .pushedReservations(.action(.reservation(_, .presentedDetail(.action(.editCoordinator(.action(.closeAllTapped))))))),
+                    .presentedReservations(.action(.reservation(_, .pushedDetail(.action(.editCoordinator(.action(.closeAllTapped))))))),
+                    .presentedReservations(.action(.reservation(_, .presentedDetail(.action(.editCoordinator(.action(.closeAllTapped))))))):
                 state.route = nil
                 return .none
 
-            case .pushedReservations(.action(.pushedDetail(.onSystemClose))),
-                    .pushedReservations(.action(.presentedDetail(.onSystemClose))),
-                    .presentedReservations(.action(.pushedDetail(.onSystemClose))),
-                    .presentedReservations(.action(.presentedDetail(.onSystemClose))):
-                Log.debug("detail onClose called")
-                return .none
+//            case .pushedReservations(.action(.pushedDetail(.onSystemClose))),
+//                    .pushedReservations(.action(.presentedDetail(.onSystemClose))),
+//                    .presentedReservations(.action(.pushedDetail(.onSystemClose))),
+//                    .presentedReservations(.action(.presentedDetail(.onSystemClose))):
+//                Log.debug("detail onClose called")
+//                return .none
 
             case .presentedReservations, .pushedReservations:
                 return .none

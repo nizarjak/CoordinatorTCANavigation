@@ -8,7 +8,7 @@ extension Reservations {
     enum Route: Equatable {
 //        case pushedDetail(Detail.State)
 //        case presentedDetail(Detail.State)
-        case reservation(String, Reservation.Route)
+        case reservation(Reservation.Route)
     }
 
     struct State: Equatable {
@@ -32,7 +32,7 @@ extension Reservations {
     }
 
     struct Environment {
-        var detail: Detail.Environment {
+        var reservation: Reservation.Environment {
             .init()
         }
     }
@@ -42,12 +42,19 @@ extension Reservations {
         Reservation.reducer.forEach(
             state: \.reservations,
             action: /Action.reservation,
-            environment: { _ in () }
+            environment: \.reservation
         ),
 
         // navigation
         .init { state, action, _ in
             switch action {
+
+            case .reservation(let id, .presentButtonTapped), .reservation(let id, .pushButtonTapped):
+                guard let reservation = state.reservations[id: id] else { return .none }
+                guard let route = reservation.route else { return .none }
+                state.route = .reservation(route)
+                return .none
+
             case .closeButtonTapped, .reservation:
                 return .none
             }

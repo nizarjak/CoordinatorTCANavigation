@@ -21,12 +21,21 @@ extension Reservation {
     }
 
     enum Action: Equatable {
+        case pushedDetail(NavigationAction<Detail.Action>)
+        case presentedDetail(NavigationAction<Detail.Action>)
+
         case pushButtonTapped
         case presentButtonTapped
         case likeButtonTapped
     }
 
-    static let reducer: Reducer<State, Action, Void> = .combine([
+    struct Environment {
+        var detail: Detail.Environment {
+            .init()
+        }
+    }
+
+    static let reducer: Reducer<State, Action, Environment> = .combine([
         // pushed
         Detail.reducer._pullback(
             state: (\State.route).appending(path: /Route.pushedDetail),
@@ -46,11 +55,38 @@ extension Reservation {
            case .likeButtonTapped:
                state.isLiked.toggle()
 
-           case .pushButtonTapped, .presentButtonTapped:
+           // present detail
+           case .presentedDetail(.onSystemClose), .presentedDetail(.action(.closeButtonTapped)):
+               state.route = nil
+               return .none
+
+           case .presentButtonTapped:
+               state.route = .presentedDetail(.init(id: state.id, name: state.name, color: state.color, isLiked: state.isLiked))
+               return .none
+
+               // push detail
+           case .pushButtonTapped:
+               state.route = .pushedDetail(.init(id: state.id, name: state.name, color: state.color, isLiked: state.isLiked))
+               return .none
+
+           case .pushedDetail(.onSystemClose), .pushedDetail(.action(.closeButtonTapped)):
+               state.route = nil
+               return.none
+
+           case .pushedDetail(.action(.editSwiftUI(.closeToReservationsTapped))),
+                   .pushedDetail(.action(.editCoordinator(.action(.closeToReservationsTapped)))),
+                   .presentedDetail(.action(.editSwiftUI(.closeToReservationsTapped))),
+                   .presentedDetail(.action(.editCoordinator(.action(.closeToReservationsTapped)))):
+               state.route = nil
+               return .none
+
+           case .pushButtonTapped, .presentButtonTapped, .pushedDetail, .presentedDetail:
                break
            }
            return .none
-       }
+       },
+
+
     ])
 
     struct View: SwiftUI.View {
@@ -92,12 +128,12 @@ extension Reservation {
     }
 }
 
-struct Reservation_Preview: PreviewProvider {
-    static var previews: some View {
-        Reservation.View(store: Store(
-            initialState: .init(id: .init(), name: "Green", color: .green, isLiked: true),
-            reducer: Reservation.reducer,
-            environment: ()
-        ))
-    }
-}
+//struct Reservation_Preview: PreviewProvider {
+//    static var previews: some View {
+//        Reservation.View(store: Store(
+//            initialState: .init(id: .init(), name: "Green", color: .green, isLiked: true),
+//            reducer: Reservation.reducer,
+//            environment: ()
+//        ))
+//    }
+//}

@@ -52,8 +52,8 @@ extension Reservations {
 
         private func bindPresentedDetail(to viewController: UIViewController) {
             present(
-                state: (\State.route).appending(path: /Route.presentedDetail),
-                action: (/NavigationAction<Action>.action).appending(path: /Action.presentedDetail),
+                state: (\State.route).appending(path: /Route.reservation).appending(path: /Reservation.Route.presentedDetail),
+                action: (/NavigationAction<Action>.action).appending(path: /Action.reservation(<#T##String#>, <#T##Reservation.Action#>)),
                 into: viewController,
                 coordinator: Detail.Coordinator.init(store:)
             )
@@ -61,7 +61,7 @@ extension Reservations {
 
         private func bindPushedDetail(to navigationController: UINavigationController) {
             push(
-                state: (\State.route).appending(path: /Route.pushedDetail),
+                state: (\State.route).appending(path: /Route.reservation),
                 action: (/NavigationAction<Action>.action).appending(path: /Action.pushedDetail),
                 into: navigationController,
                 coordinator: Detail.Coordinator.init(store:)
